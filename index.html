@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Radio Stations</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+      padding-bottom: 100px;
+    }
+    
+    .header {
+      text-align: center;
+      padding: 25px 0;
+      margin-bottom: 20px;
+    }
+    
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #ff6b6b, #ffa502);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .header p {
+      color: #a0a0c0;
+      font-size: 1.1rem;
+    }
+    
+    .stations-container {
+      max-width: 800px;
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+    
+    .station-card {
+      background: rgba(30, 30, 46, 0.7);
+      border-radius: 20px;
+      padding: 25px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .station-card.playing {
+      border: 1px solid #ff6b6b;
+      box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
+    }
+    
+    .station-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    
+    .station-info {
+      flex: 1;
+    }
+    
+    .station-name {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    
+    .station-meta {
+      color: #a0a0c0;
+      font-size: 0.95rem;
+    }
+    
+    .play-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6b6b, #ffa502);
+      border: none;
+      color: white;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+      flex-shrink: 0;
+    }
+    
+    .play-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+    }
+    
+    .play-btn.playing {
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    }
+    
+    .now-playing {
+      text-align: center;
+      padding: 15px;
+      margin-top: 20px;
+      background: rgba(30, 30, 46, 0.7);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .now-playing h3 {
+      color: #ff6b6b;
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+    
+    .now-playing p {
+      font-size: 1.1rem;
+      color: #a0a0c0;
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    
+    .nav-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+    
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+    
+    .visualizer {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 60px;
+      gap: 3px;
+      margin: 20px 0;
+    }
+    
+    .bar {
+      width: 4px;
+      background: linear-gradient(to top, #ff6b6b, #ffa502);
+      border-radius: 2px;
+      animation: visualizer 1.5s infinite ease-in-out;
+    }
+    
+    @keyframes visualizer {
+      0%, 100% { height: 10px; }
+      50% { height: 50px; }
+    }
+    
+    .developer-credit {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      font-size: 1.2rem;
+      color: #a0a0c0;
+      position: relative;
+    }
+    
+    .developer-credit::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #ff6b6b, transparent);
+    }
+    
+    .developer-name {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 8px 20px;
+      background: rgba(255, 107, 107, 0.1);
+      border-radius: 30px;
+      font-weight: 600;
+      color: #ff6b6b;
+      letter-spacing: 1px;
+      box-shadow: 0 0 15px rgba(255, 107, 107, 0.2);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.2); }
+      50% { box-shadow: 0 0 25px rgba(255, 107, 107, 0.4); }
+      100% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.2); }
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #a0a0c0;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 600px) {
+      .station-card {
+        padding: 20px;
+      }
+      
+      .station-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+      }
+      
+      .station-name {
+        font-size: 1.2rem;
+      }
+      
+      .play-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+      }
+      
+      .controls {
+        gap: 15px;
+      }
+      
+      .nav-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+      }
+      
+      .developer-credit {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><i class="fas fa-music"></i> My Radio Stations</h1>
+    <p>Stream your favorite Indian radio stations</p>
+  </div>
+  
+  <div class="visualizer" id="visualizer">
+    <!-- Visualizer bars will be generated by JS -->
+  </div>
+  
+  <div class="now-playing" id="nowPlaying">
+    <h3>Now Playing</h3>
+    <p>Select a station to start listening</p>
+  </div>
+  
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn">
+      <i class="fas fa-step-backward"></i>
+    </button>
+    <button class="nav-btn" id="nextBtn">
+      <i class="fas fa-step-forward"></i>
+    </button>
+  </div>
+  
+  <div class="stations-container" id="stationsContainer">
+    <!-- Stations will be populated by JS -->
+  </div>
+  
+  <div class="developer-credit">
+    <p>Developed with <i class="fas fa-heart" style="color: #ff6b6b;"></i> by</p>
+    <div class="developer-name">ROCKY</div>
+  </div>
+  
+  <div class="footer">
+    <p>Made for Indian Radio Lovers</p>
+  </div>
+
+  <script>
+    // Radio station data with icons and descriptions
+    const stations = [
+      {
+        id: 'mirchi',
+        name: 'Radio Mirchi 98.3 FM',
+        description: 'Top Charts • Entertainment',
+        icon: 'fas fa-fire',
+        color: 'linear-gradient(135deg, #ff9800, #ffc107)',
+        streamUrl: 'https://eu8.fastcast4u.com/proxy/clyedupq?mp=%2F1?aw_0_req_lsid=2c0fae177108c9a42a7cf24878625444'
+      },
+      {
+        id: 'bigfm',
+        name: '92.7 Big FM',
+        description: 'Bollywood Hits • Live Music',
+        icon: 'fas fa-music',
+        color: 'linear-gradient(135deg, #e91e63, #ff6b6b)',
+        streamUrl: 'https://stream.zeno.fm/dbstwo3dvhhtv'
+      },
+      {
+        id: 'nasha',
+        name: 'Radio Nasha 91.9 FM',
+        description: 'Fun & Comedy • Hindi Mix',
+        icon: 'fas fa-laugh',
+        color: 'linear-gradient(135deg, #4caf50, #8bc34a)',
+        streamUrl: 'https://stream-158.zeno.fm/zu59ykebs2zuv?zt=eyJhbGciOiJIUzI1NiJ9.eyJzdHJlYW0iOiJ6dTU5eWtlYnMyenV2IiwiaG9zdCI6InN0cmVhbS0xNTguemVuby5mbSIsInJ0dGwiOjUsImp0aSI6InZlZXhjVE96Uk8ycU5NLWVsd0tLYnciLCJpYXQiOjE3NTY2NDgwMDUsImV4cCI6MTc1NjY0ODA2NX0.Y3ezsFTrc0NNFt1jOnoa6mrjgG3ZbDiKWWYTb_G2Y5w'
+      },
+      {
+        id: 'ishq',
+        name: 'Ishq FM',
+        description: 'Romantic Hits • Love Songs',
+        icon: 'fas fa-heart',
+        color: 'linear-gradient(135deg, #9c27b0, #673ab7)',
+        streamUrl: 'https://drive.uber.radio/uber/bollywoodlove/icecast.audio'
+      }
+    ];
+    
+    // Audio element for playback
+    let audio = new Audio();
+    let currentStation = null;
+    
+    // DOM elements
+    const stationsContainer = document.getElementById('stationsContainer');
+    const nowPlaying = document.getElementById('nowPlaying');
+    const visualizer = document.getElementById('visualizer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    // Create visualizer bars
+    for (let i = 0; i < 30; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.style.animationDelay = `${i * 0.1}s`;
+      visualizer.appendChild(bar);
+    }
+    
+    // Populate stations
+    stations.forEach(station => {
+      const stationCard = document.createElement('div');
+      stationCard.className = 'station-card';
+      stationCard.id = `station-${station.id}`;
+      
+      stationCard.innerHTML = `
+        <div class="station-icon" style="background: ${station.color};">
+          <i class="${station.icon}"></i>
+        </div>
+        <div class="station-info">
+          <div class="station-name">${station.name}</div>
+          <div class="station-meta">${station.description}</div>
+        </div>
+        <button class="play-btn" data-id="${station.id}">
+          <i class="fas fa-play"></i>
+        </button>
+      `;
+      
+      stationsContainer.appendChild(stationCard);
+    });
+    
+    // Find station index
+    function getStationIndex(stationId) {
+      return stations.findIndex(s => s.id === stationId);
+    }
+    
+    // Get next station
+    function getNextStationId() {
+      if (!currentStation) return stations[0].id;
+      const currentIndex = getStationIndex(currentStation.id);
+      const nextIndex = (currentIndex + 1) % stations.length;
+      return stations[nextIndex].id;
+    }
+    
+    // Get previous station
+    function getPrevStationId() {
+      if (!currentStation) return stations[stations.length - 1].id;
+      const currentIndex = getStationIndex(currentStation.id);
+      const prevIndex = (currentIndex - 1 + stations.length) % stations.length;
+      return stations[prevIndex].id;
+    }
+    
+    // Play station by ID
+    function playStationById(stationId) {
+      const station = stations.find(s => s.id === stationId);
+      if (!station) return;
+      
+      // Stop current station
+      if (currentStation) {
+        updatePlayButton(currentStation.id, false);
+      }
+      
+      // Play new station
+      audio.src = station.streamUrl;
+      audio.volume = 1.0;
+      audio.play()
+        .then(() => {
+          currentStation = station;
+          updatePlayButton(stationId, true);
+          updateNowPlaying(station.name);
+          highlightPlayingStation(stationId);
+        })
+        .catch(err => {
+          console.error('Playback failed:', err);
+          alert('Could not play this station. Please try again.');
+        });
+    }
+    
+    // Event delegation for play buttons
+    stationsContainer.addEventListener('click', (e) => {
+      if (e.target.closest('.play-btn')) {
+        const button = e.target.closest('.play-btn');
+        const stationId = button.getAttribute('data-id');
+        const station = stations.find(s => s.id === stationId);
+        
+        if (currentStation && currentStation.id === stationId) {
+          // Toggle play/pause for the same station
+          if (audio.paused) {
+            audio.play();
+            updatePlayButton(stationId, true);
+            updateNowPlaying(station.name);
+          } else {
+            audio.pause();
+            updatePlayButton(stationId, false);
+            updateNowPlaying('Paused');
+          }
+        } else {
+          playStationById(stationId);
+        }
+      }
+    });
+    
+    // Next button event
+    nextBtn.addEventListener('click', () => {
+      const nextStationId = getNextStationId();
+      playStationById(nextStationId);
+    });
+    
+    // Previous button event
+    prevBtn.addEventListener('click', () => {
+      const prevStationId = getPrevStationId();
+      playStationById(prevStationId);
+    });
+    
+    // Update play/pause button state
+    function updatePlayButton(stationId, isPlaying) {
+      const button = document.querySelector(`.play-btn[data-id="${stationId}"]`);
+      const icon = button?.querySelector('i');
+      if (button && icon) {
+        if (isPlaying) {
+          button.classList.add('playing');
+          icon.className = 'fas fa-pause';
+        } else {
+          button.classList.remove('playing');
+          icon.className = 'fas fa-play';
+        }
+      }
+    }
+    
+    // Update now playing display
+    function updateNowPlaying(stationName) {
+      nowPlaying.innerHTML = `
+        <h3>Now Playing</h3>
+        <p>${stationName}</p>
+      `;
+    }
+    
+    // Highlight currently playing station
+    function highlightPlayingStation(stationId) {
+      // Remove highlight from all stations
+      document.querySelectorAll('.station-card').forEach(card => {
+        card.classList.remove('playing');
+      });
+      
+      // Add highlight to current station
+      const currentCard = document.getElementById(`station-${stationId}`);
+      if (currentCard) {
+        currentCard.classList.add('playing');
+      }
+    }
+    
+    // Handle audio errors
+    audio.addEventListener('error', () => {
+      console.error('Audio playback error');
+      if (currentStation) {
+        updatePlayButton(currentStation.id, false);
+        updateNowPlaying('Playback Error');
+        currentStation = null;
+      }
+    });
+    
+    // Handle audio ended
+    audio.addEventListener('ended', () => {
+      if (currentStation) {
+        updatePlayButton(currentStation.id, false);
+        updateNowPlaying('Playback Stopped');
+        currentStation = null;
+      }
+    });
+    
+    // ✅ Auto-play REMOVED — User must manually start playback
+  </script>
+</body>
+</html>
