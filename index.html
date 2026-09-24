@@ -2,14 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>My Radio Stations</title>
+  
+  <!-- iOS PWA Settings -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="My Radio">
+  <meta name="theme-color" content="#1a1a2e">
+
+  <!-- Placeholders for Inbuilt Generated Icons -->
+  <link rel="apple-touch-icon" id="apple-icon" sizes="180x180">
+  <link rel="icon" id="favicon" type="image/png">
+  <link rel="manifest" id="pwa-manifest">
+
+  <!-- INBUILT ICON GENERATOR SCRIPT (Executes instantly before rendering) -->
+  <script>
+    (function generateInbuiltIcon() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 180;
+      canvas.height = 180;
+      const ctx = canvas.getContext('2d');
+
+      // 1. Dark solid background (Prevents iOS transparency bug)
+      const bgGrad = ctx.createLinearGradient(0, 0, 180, 180);
+      bgGrad.addColorStop(0, '#1f1d36');
+      bgGrad.addColorStop(1, '#0e131f');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 180, 180);
+
+      // 2. Vibrant gradient inner circle
+      const circleGrad = ctx.createLinearGradient(20, 20, 160, 160);
+      circleGrad.addColorStop(0, '#ff6b6b');
+      circleGrad.addColorStop(1, '#ffa502');
+      ctx.beginPath();
+      ctx.arc(90, 95, 56, 0, Math.PI * 2);
+      ctx.fillStyle = circleGrad;
+      ctx.fill();
+
+      // 3. Antenna
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(65, 75);
+      ctx.lineTo(48, 50);
+      ctx.stroke();
+
+      // Antenna tip
+      ctx.beginPath();
+      ctx.arc(46, 48, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+
+      // 4. Radio Body
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(52, 75, 76, 44, 10);
+      } else {
+        ctx.rect(52, 75, 76, 44);
+      }
+      ctx.fill();
+
+      // 5. Speaker Grill
+      ctx.fillStyle = '#ff6b6b';
+      ctx.beginPath();
+      ctx.arc(74, 97, 13, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(74, 97, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 6. Tuner Display & Dials
+      ctx.fillStyle = '#ffa502';
+      ctx.fillRect(96, 86, 22, 5);
+      ctx.fillRect(96, 94, 22, 5);
+      ctx.fillRect(96, 102, 22, 5);
+
+      // 7. Radio Waves
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(90, 95, 68, -Math.PI * 0.75, -Math.PI * 0.25);
+      ctx.stroke();
+
+      // Export base64 Data URL
+      const iconUrl = canvas.toDataURL('image/png');
+      window.generatedAppIcon = iconUrl;
+
+      // Assign to iOS Home Screen Icon & Favicon
+      document.getElementById('apple-icon').href = iconUrl;
+      document.getElementById('favicon').href = iconUrl;
+
+      // Inline PWA Web Manifest
+      const manifest = {
+        name: "My Radio Stations",
+        short_name: "Radio",
+        start_url: "./",
+        display: "standalone",
+        background_color: "#1a1a2e",
+        theme_color: "#1a1a2e",
+        icons: [{ src: iconUrl, sizes: "180x180", type: "image/png" }]
+      };
+      const stringManifest = JSON.stringify(manifest);
+      const manifestBlob = new Blob([stringManifest], { type: 'application/manifest+json' });
+      document.getElementById('pwa-manifest').href = URL.createObjectURL(manifestBlob);
+    })();
+  </script>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
     }
     
@@ -18,111 +128,59 @@
       color: #fff;
       min-height: 100vh;
       padding: 20px;
-      padding-bottom: 100px;
+      padding-bottom: 80px;
     }
     
     .header {
       text-align: center;
-      padding: 25px 0;
-      margin-bottom: 20px;
+      padding: 20px 0 10px 0;
     }
     
     .header h1 {
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 700;
       margin-bottom: 8px;
       background: linear-gradient(90deg, #ff6b6b, #ffa502);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
     
     .header p {
       color: #a0a0c0;
-      font-size: 1.1rem;
+      font-size: 1rem;
     }
     
-    .stations-container {
-      max-width: 800px;
-      margin: 0 auto;
-      display: grid;
-      gap: 20px;
-    }
-    
-    .station-card {
-      background: rgba(30, 30, 46, 0.7);
-      border-radius: 20px;
-      padding: 25px;
+    .visualizer {
       display: flex;
-      align-items: center;
-      gap: 20px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s ease;
-    }
-    
-    .station-card.playing {
-      border: 1px solid #ff6b6b;
-      box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
-    }
-    
-    .station-icon {
-      width: 70px;
-      height: 70px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
       justify-content: center;
-      font-size: 28px;
-      flex-shrink: 0;
+      align-items: flex-end;
+      height: 45px;
+      gap: 4px;
+      margin: 15px 0;
     }
     
-    .station-info {
-      flex: 1;
+    .bar {
+      width: 4px;
+      height: 6px;
+      background: linear-gradient(to top, #ff6b6b, #ffa502);
+      border-radius: 2px;
+      transition: height 0.2s ease;
     }
     
-    .station-name {
-      font-size: 1.4rem;
-      font-weight: 600;
-      margin-bottom: 6px;
+    .visualizer.active .bar {
+      animation: visualizer 1.2s infinite ease-in-out;
     }
     
-    .station-meta {
-      color: #a0a0c0;
-      font-size: 0.95rem;
-    }
-    
-    .play-btn {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #ff6b6b, #ffa502);
-      border: none;
-      color: white;
-      font-size: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-      flex-shrink: 0;
-    }
-    
-    .play-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
-    }
-    
-    .play-btn.playing {
-      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    @keyframes visualizer {
+      0%, 100% { height: 6px; }
+      50% { height: 40px; }
     }
     
     .now-playing {
       text-align: center;
       padding: 15px;
-      margin-top: 20px;
+      margin: 15px auto;
+      max-width: 650px;
       background: rgba(30, 30, 46, 0.7);
       border-radius: 15px;
       backdrop-filter: blur(10px);
@@ -131,25 +189,28 @@
     
     .now-playing h3 {
       color: #ff6b6b;
-      margin-bottom: 10px;
-      font-size: 1.3rem;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
     .now-playing p {
-      font-size: 1.1rem;
-      color: #a0a0c0;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
     }
     
     .controls {
       display: flex;
       justify-content: center;
-      gap: 20px;
+      gap: 25px;
       margin: 20px 0;
     }
     
     .nav-btn {
-      width: 50px;
-      height: 50px;
+      width: 55px;
+      height: 55px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -159,158 +220,137 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.3s ease;
       backdrop-filter: blur(5px);
     }
     
-    .nav-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: scale(1.05);
+    .nav-btn:active {
+      transform: scale(0.95);
     }
     
-    .visualizer {
+    .stations-container {
+      max-width: 650px;
+      margin: 0 auto;
+      display: grid;
+      gap: 15px;
+    }
+    
+    .station-card {
+      background: rgba(30, 30, 46, 0.7);
+      border-radius: 18px;
+      padding: 18px;
       display: flex;
+      align-items: center;
+      gap: 15px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: border 0.3s ease;
+    }
+    
+    .station-card.playing {
+      border: 1px solid #ff6b6b;
+      box-shadow: 0 0 15px rgba(255, 107, 107, 0.35);
+    }
+    
+    .station-icon {
+      width: 55px;
+      height: 55px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      align-items: flex-end;
-      height: 60px;
-      gap: 3px;
-      margin: 20px 0;
+      font-size: 24px;
+      flex-shrink: 0;
     }
     
-    .bar {
-      width: 4px;
-      background: linear-gradient(to top, #ff6b6b, #ffa502);
-      border-radius: 2px;
-      animation: visualizer 1.5s infinite ease-in-out;
+    .station-info {
+      flex: 1;
     }
     
-    @keyframes visualizer {
-      0%, 100% { height: 10px; }
-      50% { height: 50px; }
+    .station-name {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .station-meta {
+      color: #a0a0c0;
+      font-size: 0.85rem;
+    }
+    
+    .play-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff6b6b, #ffa502);
+      border: none;
+      color: white;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    
+    .play-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .play-btn.playing {
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
     }
     
     .developer-credit {
       text-align: center;
-      margin-top: 40px;
-      padding: 20px;
-      font-size: 1.2rem;
+      margin-top: 35px;
+      font-size: 1rem;
       color: #a0a0c0;
-      position: relative;
-    }
-    
-    .developer-credit::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, #ff6b6b, transparent);
     }
     
     .developer-name {
       display: inline-block;
-      margin-top: 15px;
-      padding: 8px 20px;
+      margin-top: 10px;
+      padding: 6px 18px;
       background: rgba(255, 107, 107, 0.1);
-      border-radius: 30px;
+      border-radius: 20px;
       font-weight: 600;
       color: #ff6b6b;
-      letter-spacing: 1px;
-      box-shadow: 0 0 15px rgba(255, 107, 107, 0.2);
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.2); }
-      50% { box-shadow: 0 0 25px rgba(255, 107, 107, 0.4); }
-      100% { box-shadow: 0 0 15px rgba(255, 107, 107, 0.2); }
-    }
-    
-    .footer {
-      text-align: center;
-      margin-top: 20px;
-      color: #a0a0c0;
-      font-size: 0.9rem;
-    }
-    
-    @media (max-width: 600px) {
-      .station-card {
-        padding: 20px;
-      }
-      
-      .station-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 24px;
-      }
-      
-      .station-name {
-        font-size: 1.2rem;
-      }
-      
-      .play-btn {
-        width: 50px;
-        height: 50px;
-        font-size: 18px;
-      }
-      
-      .controls {
-        gap: 15px;
-      }
-      
-      .nav-btn {
-        width: 45px;
-        height: 45px;
-        font-size: 18px;
-      }
-      
-      .developer-credit {
-        font-size: 1rem;
-      }
     }
   </style>
 </head>
 <body>
+  <!-- Embedded audio tag with iOS attributes -->
+  <audio id="radioPlayer" playsinline webkit-playsinline preload="none"></audio>
+
   <div class="header">
     <h1><i class="fas fa-music"></i> My Radio Stations</h1>
-    <p>Stream your favorite Indian radio stations</p>
+    <p>Stream live to your phone & car</p>
   </div>
   
-  <div class="visualizer" id="visualizer">
-    <!-- Visualizer bars will be generated by JS -->
-  </div>
+  <div class="visualizer" id="visualizer"></div>
   
   <div class="now-playing" id="nowPlaying">
-    <h3>Now Playing</h3>
-    <p>Select a station to start listening</p>
+    <h3 id="statusLabel">Status</h3>
+    <p id="nowPlayingText">Select a station to start</p>
   </div>
   
   <div class="controls">
-    <button class="nav-btn" id="prevBtn">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous Station">
       <i class="fas fa-step-backward"></i>
     </button>
-    <button class="nav-btn" id="nextBtn">
+    <button class="nav-btn" id="nextBtn" aria-label="Next Station">
       <i class="fas fa-step-forward"></i>
     </button>
   </div>
   
-  <div class="stations-container" id="stationsContainer">
-    <!-- Stations will be populated by JS -->
-  </div>
+  <div class="stations-container" id="stationsContainer"></div>
   
   <div class="developer-credit">
     <p>Developed with <i class="fas fa-heart" style="color: #ff6b6b;"></i> by</p>
     <div class="developer-name">ROCKY</div>
   </div>
-  
-  <div class="footer">
-    <p>Made for Indian Radio Lovers</p>
-  </div>
 
   <script>
-    // Radio station data with icons and descriptions
     const stations = [
       {
         id: 'mirchi',
@@ -318,7 +358,7 @@
         description: 'Top Charts • Entertainment',
         icon: 'fas fa-fire',
         color: 'linear-gradient(135deg, #ff9800, #ffc107)',
-        streamUrl: 'https://eu8.fastcast4u.com/proxy/clyedupq?mp=%2F1?aw_0_req_lsid=2c0fae177108c9a42a7cf24878625444'
+        streamUrl: 'https://eu8.fastcast4u.com/proxy/clyedupq?mp=/1'
       },
       {
         id: 'bigfm',
@@ -334,7 +374,7 @@
         description: 'Fun & Comedy • Hindi Mix',
         icon: 'fas fa-laugh',
         color: 'linear-gradient(135deg, #4caf50, #8bc34a)',
-        streamUrl: 'https://stream-158.zeno.fm/zu59ykebs2zuv?zt=eyJhbGciOiJIUzI1NiJ9.eyJzdHJlYW0iOiJ6dTU5eWtlYnMyenV2IiwiaG9zdCI6InN0cmVhbS0xNTguemVuby5mbSIsInJ0dGwiOjUsImp0aSI6InZlZXhjVE96Uk8ycU5NLWVsd0tLYnciLCJpYXQiOjE3NTY2NDgwMDUsImV4cCI6MTc1NjY0ODA2NX0.Y3ezsFTrc0NNFt1jOnoa6mrjgG3ZbDiKWWYTb_G2Y5w'
+        streamUrl: 'https://stream.zeno.fm/zu59ykebs2zuv'
       },
       {
         id: 'ishq',
@@ -345,27 +385,25 @@
         streamUrl: 'https://drive.uber.radio/uber/bollywoodlove/icecast.audio'
       }
     ];
-    
-    // Audio element for playback
-    let audio = new Audio();
+
+    const audio = document.getElementById('radioPlayer');
     let currentStation = null;
-    
-    // DOM elements
+
     const stationsContainer = document.getElementById('stationsContainer');
-    const nowPlaying = document.getElementById('nowPlaying');
+    const nowPlayingText = document.getElementById('nowPlayingText');
     const visualizer = document.getElementById('visualizer');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    
-    // Create visualizer bars
-    for (let i = 0; i < 30; i++) {
+
+    // Visualizer Bars
+    for (let i = 0; i < 24; i++) {
       const bar = document.createElement('div');
       bar.className = 'bar';
-      bar.style.animationDelay = `${i * 0.1}s`;
+      bar.style.animationDelay = `${(i % 6) * 0.18}s`;
       visualizer.appendChild(bar);
     }
-    
-    // Populate stations
+
+    // Populate Station Cards
     stations.forEach(station => {
       const stationCard = document.createElement('div');
       stationCard.className = 'station-card';
@@ -383,150 +421,139 @@
           <i class="fas fa-play"></i>
         </button>
       `;
-      
       stationsContainer.appendChild(stationCard);
     });
-    
-    // Find station index
-    function getStationIndex(stationId) {
-      return stations.findIndex(s => s.id === stationId);
+
+    // Update Bluetooth & Lock Screen Information (Uses the Generated Icon)
+    function updateMediaSession(station) {
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: station.name,
+          artist: station.description,
+          album: 'Live Radio',
+          artwork: [
+            { src: window.generatedAppIcon, sizes: '180x180', type: 'image/png' }
+          ]
+        });
+
+        navigator.mediaSession.setActionHandler('play', () => audio.play());
+        navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+        navigator.mediaSession.setActionHandler('nexttrack', () => changeStation(1));
+        navigator.mediaSession.setActionHandler('previoustrack', () => changeStation(-1));
+      }
     }
-    
-    // Get next station
-    function getNextStationId() {
-      if (!currentStation) return stations[0].id;
-      const currentIndex = getStationIndex(currentStation.id);
-      const nextIndex = (currentIndex + 1) % stations.length;
-      return stations[nextIndex].id;
+
+    function setPlaybackState(isPlaying) {
+      if (isPlaying) {
+        visualizer.classList.add('active');
+        if (currentStation) updatePlayButton(currentStation.id, true);
+        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
+      } else {
+        visualizer.classList.remove('active');
+        if (currentStation) updatePlayButton(currentStation.id, false);
+        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
+      }
     }
-    
-    // Get previous station
-    function getPrevStationId() {
-      if (!currentStation) return stations[stations.length - 1].id;
-      const currentIndex = getStationIndex(currentStation.id);
-      const prevIndex = (currentIndex - 1 + stations.length) % stations.length;
-      return stations[prevIndex].id;
+
+    function playStation(station) {
+      if (currentStation && currentStation.id !== station.id) {
+        updatePlayButton(currentStation.id, false);
+      }
+      
+      currentStation = station;
+      highlightPlayingStation(station.id);
+      nowPlayingText.textContent = `Connecting to ${station.name}...`;
+
+      audio.src = station.streamUrl;
+      audio.load();
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            updateMediaSession(station);
+          })
+          .catch(err => {
+            console.error('Playback failed:', err);
+            nowPlayingText.textContent = 'Stream unavailable. Try another.';
+            setPlaybackState(false);
+          });
+      }
     }
-    
-    // Play station by ID
-    function playStationById(stationId) {
+
+    function togglePlay(stationId) {
       const station = stations.find(s => s.id === stationId);
       if (!station) return;
       
-      // Stop current station
-      if (currentStation) {
-        updatePlayButton(currentStation.id, false);
-      }
-      
-      // Play new station
-      audio.src = station.streamUrl;
-      audio.volume = 1.0;
-      audio.play()
-        .then(() => {
-          currentStation = station;
-          updatePlayButton(stationId, true);
-          updateNowPlaying(station.name);
-          highlightPlayingStation(stationId);
-        })
-        .catch(err => {
-          console.error('Playback failed:', err);
-          alert('Could not play this station. Please try again.');
-        });
-    }
-    
-    // Event delegation for play buttons
-    stationsContainer.addEventListener('click', (e) => {
-      if (e.target.closest('.play-btn')) {
-        const button = e.target.closest('.play-btn');
-        const stationId = button.getAttribute('data-id');
-        const station = stations.find(s => s.id === stationId);
-        
-        if (currentStation && currentStation.id === stationId) {
-          // Toggle play/pause for the same station
-          if (audio.paused) {
-            audio.play();
-            updatePlayButton(stationId, true);
-            updateNowPlaying(station.name);
-          } else {
-            audio.pause();
-            updatePlayButton(stationId, false);
-            updateNowPlaying('Paused');
-          }
+      if (currentStation && currentStation.id === stationId) {
+        if (audio.paused) {
+          audio.play();
         } else {
-          playStationById(stationId);
+          audio.pause();
         }
+      } else {
+        playStation(station);
+      }
+    }
+
+    function changeStation(direction) {
+      const currentIndex = currentStation ? stations.findIndex(s => s.id === currentStation.id) : 0;
+      let targetIndex = currentIndex + direction;
+      
+      if (targetIndex >= stations.length) targetIndex = 0;
+      if (targetIndex < 0) targetIndex = stations.length - 1;
+
+      playStation(stations[targetIndex]);
+    }
+
+    audio.addEventListener('playing', () => {
+      setPlaybackState(true);
+      nowPlayingText.textContent = currentStation.name;
+    });
+
+    audio.addEventListener('pause', () => {
+      setPlaybackState(false);
+      nowPlayingText.textContent = `Paused (${currentStation ? currentStation.name : ''})`;
+    });
+
+    audio.addEventListener('waiting', () => {
+      nowPlayingText.textContent = 'Buffering...';
+    });
+
+    audio.addEventListener('error', () => {
+      nowPlayingText.textContent = 'Error connecting to radio.';
+      setPlaybackState(false);
+    });
+
+    stationsContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.play-btn');
+      if (btn) {
+        const id = btn.getAttribute('data-id');
+        togglePlay(id);
       }
     });
-    
-    // Next button event
-    nextBtn.addEventListener('click', () => {
-      const nextStationId = getNextStationId();
-      playStationById(nextStationId);
-    });
-    
-    // Previous button event
-    prevBtn.addEventListener('click', () => {
-      const prevStationId = getPrevStationId();
-      playStationById(prevStationId);
-    });
-    
-    // Update play/pause button state
+
+    nextBtn.addEventListener('click', () => changeStation(1));
+    prevBtn.addEventListener('click', () => changeStation(-1));
+
     function updatePlayButton(stationId, isPlaying) {
       const button = document.querySelector(`.play-btn[data-id="${stationId}"]`);
-      const icon = button?.querySelector('i');
-      if (button && icon) {
-        if (isPlaying) {
-          button.classList.add('playing');
-          icon.className = 'fas fa-pause';
-        } else {
-          button.classList.remove('playing');
-          icon.className = 'fas fa-play';
-        }
+      if (!button) return;
+      const icon = button.querySelector('i');
+      if (isPlaying) {
+        button.classList.add('playing');
+        icon.className = 'fas fa-pause';
+      } else {
+        button.classList.remove('playing');
+        icon.className = 'fas fa-play';
       }
     }
-    
-    // Update now playing display
-    function updateNowPlaying(stationName) {
-      nowPlaying.innerHTML = `
-        <h3>Now Playing</h3>
-        <p>${stationName}</p>
-      `;
-    }
-    
-    // Highlight currently playing station
+
     function highlightPlayingStation(stationId) {
-      // Remove highlight from all stations
-      document.querySelectorAll('.station-card').forEach(card => {
-        card.classList.remove('playing');
-      });
-      
-      // Add highlight to current station
-      const currentCard = document.getElementById(`station-${stationId}`);
-      if (currentCard) {
-        currentCard.classList.add('playing');
-      }
+      document.querySelectorAll('.station-card').forEach(card => card.classList.remove('playing'));
+      const activeCard = document.getElementById(`station-${stationId}`);
+      if (activeCard) activeCard.classList.add('playing');
     }
-    
-    // Handle audio errors
-    audio.addEventListener('error', () => {
-      console.error('Audio playback error');
-      if (currentStation) {
-        updatePlayButton(currentStation.id, false);
-        updateNowPlaying('Playback Error');
-        currentStation = null;
-      }
-    });
-    
-    // Handle audio ended
-    audio.addEventListener('ended', () => {
-      if (currentStation) {
-        updatePlayButton(currentStation.id, false);
-        updateNowPlaying('Playback Stopped');
-        currentStation = null;
-      }
-    });
-    
-    // ✅ Auto-play REMOVED — User must manually start playback
   </script>
 </body>
 </html>
