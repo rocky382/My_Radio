@@ -211,11 +211,17 @@
       letter-spacing: 1px;
       text-transform: uppercase;
       color: #fff;
-      background: rgba(255, 75, 75, 0.25);
-      border: 1px solid rgba(255, 75, 75, 0.5);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       padding: 3px 10px;
       border-radius: 20px;
       margin-bottom: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .live-badge.live {
+      background: rgba(255, 75, 75, 0.25);
+      border-color: rgba(255, 75, 75, 0.5);
     }
 
     .live-badge.live .dot {
@@ -228,7 +234,7 @@
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: #888;
+      background: #777;
     }
 
     @keyframes pulse {
@@ -349,6 +355,7 @@
       -webkit-backdrop-filter: blur(12px);
       transition: transform 0.2s, border 0.2s, box-shadow 0.2s;
       cursor: pointer;
+      user-select: none;
     }
 
     .station-card:active {
@@ -370,11 +377,13 @@
       font-size: 1.3rem;
       color: #fff;
       flex-shrink: 0;
+      pointer-events: none; /* Prevents event conflicts */
     }
 
     .station-info {
       flex: 1;
       min-width: 0;
+      pointer-events: none;
     }
 
     .station-name {
@@ -406,8 +415,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
       flex-shrink: 0;
+      pointer-events: none; /* Card handles the click directly */
       transition: transform 0.15s ease;
     }
 
@@ -450,9 +459,9 @@
     <div class="now-playing">
       <div class="live-badge" id="liveBadge">
         <span class="dot"></span>
-        <span id="statusText">STARTING...</span>
+        <span id="statusText">STANDBY</span>
       </div>
-      <div class="now-playing-title" id="nowPlayingText">Connecting...</div>
+      <div class="now-playing-title" id="nowPlayingText">Select a station to start</div>
     </div>
 
     <div class="toolbar">
@@ -553,7 +562,7 @@
     const timerDurations = [0, 15, 30, 45, 60];
     let currentTimerIndex = 0;
 
-    // Visualizer Setup
+    // Visualizer Bars
     for (let i = 0; i < 26; i++) {
       const bar = document.createElement('div');
       bar.className = 'bar';
@@ -561,7 +570,7 @@
       visualizer.appendChild(bar);
     }
 
-    // Build Station UI
+    // Render Station UI
     function renderStations() {
       stationsContainer.innerHTML = '';
       stations.forEach(station => {
@@ -576,17 +585,18 @@
             <div class="station-name">${station.name}</div>
             <div class="station-meta">${station.description}</div>
           </div>
-          <button class="play-btn" data-id="${station.id}" aria-label="Play ${station.name}">
+          <div class="play-btn">
             <i class="fas fa-play"></i>
-          </button>
+          </div>
         `;
+        // Clean single listener on the card itself
         card.addEventListener('click', () => togglePlay(station.id));
         stationsContainer.appendChild(card);
       });
     }
     renderStations();
 
-    // Lockscreen & Control Center Integration
+    // Lockscreen & CarPlay Integration
     function updateMediaSession(station) {
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
@@ -619,7 +629,7 @@
       }
     }
 
-    // Attach stream (supports HLS .m3u8 & regular MP3/AAC)
+    // Attach stream (supports HLS .m3u8 & regular MP3/AAC with auto-recovery)
     function attachStream(url) {
       if (hlsInstance) {
         hlsInstance.destroy();
@@ -628,18 +638,38 @@
 
       if (url.includes('.m3u8')) {
         if (audio.canPlayType('application/vnd.apple.mpegurl')) {
-          // Native Safari / iOS HLS
+          // Native Safari / iOS
           audio.src = url;
-        } else if (Hls.isSupported()) {
-          // Android / Chrome / Desktop fallback
+        } else if (Hls && Hls.isSupported()) {
+          // Android / Chrome / Edge
           hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: true });
           hlsInstance.loadSource(url);
           hlsInstance.attachMedia(audio);
+
+          // Stream recovery logic
+          hlsInstance.on(Hls.Events.ERROR, function (event, data) {
+            if (data.fatal) {
+              switch (data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR:
+                  hlsInstance.startLoad();
+                  break;
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                  hlsInstance.recoverMediaError();
+                  break;
+                default:
+                  hlsInstance.destroy();
+                  statusText.textContent = "OFFLINE";
+                  nowPlayingText.textContent = "Stream error. Tap to retry.";
+                  setPlaybackState(false);
+                  break;
+              }
+            }
+          });
         } else {
           audio.src = url;
         }
       } else {
-        // Standard Shoutcast/Icecast feed
+        // Anti-cache string ensures real-time edge for Shoutcast/Icecast
         audio.src = url + (url.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
       }
     }
@@ -652,9 +682,6 @@
       currentStation = station;
       highlightStation(station.id);
       
-      // Save last played station immediately
-      localStorage.setItem('lastPlayedStationId', station.id);
-
       statusText.textContent = "CONNECTING...";
       nowPlayingText.textContent = station.name;
 
@@ -665,21 +692,11 @@
       if (promise !== undefined) {
         promise.then(() => {
           updateMediaSession(station);
-        }).catch(() => {
-          // Browser Autoplay Policy caught: Wait for first touch anywhere
-          statusText.textContent = "TAP TO RESUME";
-          nowPlayingText.textContent = `Tap anywhere to listen to ${station.name}`;
+        }).catch(err => {
+          console.warn('Playback error:', err);
+          statusText.textContent = "OFFLINE";
+          nowPlayingText.textContent = "Unable to connect. Tap to retry.";
           setPlaybackState(false);
-
-          const startAudioOnFirstTouch = () => {
-            audio.play().then(() => {
-              updateMediaSession(station);
-            });
-            window.removeEventListener('click', startAudioOnFirstTouch);
-            window.removeEventListener('touchstart', startAudioOnFirstTouch);
-          };
-          window.addEventListener('click', startAudioOnFirstTouch);
-          window.addEventListener('touchstart', startAudioOnFirstTouch);
         });
       }
     }
@@ -690,7 +707,7 @@
       
       if (currentStation && currentStation.id === stationId) {
         if (audio.paused) {
-          playStation(station);
+          playStation(station); // Re-syncs live stream
         } else {
           audio.pause();
         }
@@ -700,15 +717,20 @@
     }
 
     function changeStation(step) {
-      const currentIndex = currentStation ? stations.findIndex(s => s.id === currentStation.id) : 0;
+      if (!currentStation) {
+        playStation(step > 0 ? stations[0] : stations[stations.length - 1]);
+        return;
+      }
+      const currentIndex = stations.findIndex(s => s.id === currentStation.id);
       let nextIndex = (currentIndex + step + stations.length) % stations.length;
       playStation(stations[nextIndex]);
     }
 
     function updateCardState(stationId, isPlaying) {
-      const btn = document.querySelector(`.station-card#station-${stationId} .play-btn`);
-      if (!btn) return;
-      const icon = btn.querySelector('i');
+      const card = document.getElementById(`station-${stationId}`);
+      if (!card) return;
+      const icon = card.querySelector('.play-btn i');
+      const btn = card.querySelector('.play-btn');
       if (isPlaying) {
         btn.classList.add('playing');
         icon.className = 'fas fa-pause';
@@ -724,7 +746,7 @@
       if (activeCard) activeCard.classList.add('playing');
     }
 
-    // Audio Listeners
+    // Audio Event Handlers
     audio.addEventListener('playing', () => setPlaybackState(true));
     audio.addEventListener('pause', () => setPlaybackState(false));
     audio.addEventListener('waiting', () => { statusText.textContent = "BUFFERING"; });
@@ -737,25 +759,31 @@
     nextBtn.addEventListener('click', () => changeStation(1));
     prevBtn.addEventListener('click', () => changeStation(-1));
 
-    // Volume Controls
+    // Volume Handler (with iOS silent fallbacks)
     volumeSlider.addEventListener('input', (e) => {
-      audio.volume = e.target.value;
-      if (audio.volume === 0) volumeIcon.className = 'fas fa-volume-xmark';
-      else if (audio.volume < 0.5) volumeIcon.className = 'fas fa-volume-low';
+      try {
+        audio.volume = e.target.value;
+      } catch (err) {}
+      
+      if (e.target.value == 0) volumeIcon.className = 'fas fa-volume-xmark';
+      else if (e.target.value < 0.5) volumeIcon.className = 'fas fa-volume-low';
       else volumeIcon.className = 'fas fa-volume-high';
     });
 
     volumeIcon.addEventListener('click', () => {
-      if (audio.volume > 0) {
-        audio.dataset.prevVol = audio.volume;
-        audio.volume = 0;
-        volumeSlider.value = 0;
-        volumeIcon.className = 'fas fa-volume-xmark';
-      } else {
-        audio.volume = audio.dataset.prevVol || 1;
-        volumeSlider.value = audio.volume;
-        volumeIcon.className = 'fas fa-volume-high';
-      }
+      try {
+        if (audio.volume > 0) {
+          audio.dataset.prevVol = audio.volume;
+          audio.volume = 0;
+          volumeSlider.value = 0;
+          volumeIcon.className = 'fas fa-volume-xmark';
+        } else {
+          const restoreVol = audio.dataset.prevVol || 1;
+          audio.volume = restoreVol;
+          volumeSlider.value = restoreVol;
+          volumeIcon.className = 'fas fa-volume-high';
+        }
+      } catch (err) {}
     });
 
     // Sleep Timer
@@ -780,7 +808,7 @@
       }
     });
 
-    // Keyboard Shortcuts
+    // Keyboard Navigation
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space') {
         e.preventDefault();
@@ -793,13 +821,6 @@
       } else if (e.code === 'KeyM') {
         volumeIcon.click();
       }
-    });
-
-    // AUTOMATIC RESUME LAST PLAYED STATION ON LOAD
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedStationId = localStorage.getItem('lastPlayedStationId');
-      const targetStation = stations.find(s => s.id === savedStationId) || stations[0];
-      playStation(targetStation);
     });
   </script>
 </body>
