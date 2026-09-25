@@ -485,14 +485,6 @@
   <script>
     const stations = [
       {
-        id: 'akashwani-mumbai',
-        name: 'Akashwani Mumbai',
-        description: 'AIR Mumbai • News, Culture & Live',
-        icon: 'fas fa-landmark',
-        color: 'linear-gradient(135deg, #0984e3, #74b9ff)',
-        streamUrl: 'https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio010/hlspbaudio010_Auto.m3u8'
-      },
-      {
         id: 'mirchi',
         name: 'Radio Mirchi 98.3 FM',
         description: 'Top Bollywood Charts • Live',
@@ -523,6 +515,22 @@
         icon: 'fas fa-heart',
         color: 'linear-gradient(135deg, #9c27b0, #673ab7)',
         streamUrl: 'https://drive.uber.radio/uber/bollywoodlove/icecast.audio'
+      },
+      {
+        id: 'akashwani-mumbai',
+        name: 'Akashwani Mumbai',
+        description: 'AIR Mumbai • News, Culture & Live',
+        icon: 'fas fa-landmark',
+        color: 'linear-gradient(135deg, #0984e3, #74b9ff)',
+        streamUrl: 'https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio010/hlspbaudio010_Auto.m3u8'
+      },
+      {
+        id: 'vividh-bharati-mumbai',
+        name: 'Vividh Bharati Mumbai',
+        description: 'AIR Vividh Bharati • Classic Hits & Sangeet',
+        icon: 'fas fa-radio',
+        color: 'linear-gradient(135deg, #e17055, #d63031)',
+        streamUrl: 'https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio011/hlspbaudio011_Auto.m3u8'
       }
     ];
 
@@ -658,7 +666,7 @@
         promise.then(() => {
           updateMediaSession(station);
         }).catch(() => {
-          // Browser Autoplay Policy caught: Wait for first tap anywhere
+          // Browser Autoplay Policy caught: Wait for first touch anywhere
           statusText.textContent = "TAP TO RESUME";
           nowPlayingText.textContent = `Tap anywhere to listen to ${station.name}`;
           setPlaybackState(false);
@@ -787,7 +795,7 @@
       }
     });
 
-    // AUTOMATIC RESUME ON APP LAUNCH
+    // AUTOMATIC RESUME LAST PLAYED STATION ON LOAD
     window.addEventListener('DOMContentLoaded', () => {
       const savedStationId = localStorage.getItem('lastPlayedStationId');
       const targetStation = stations.find(s => s.id === savedStationId) || stations[0];
