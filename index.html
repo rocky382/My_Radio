@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>My Radio Stations</title>
   
   <!-- iOS PWA Settings -->
@@ -11,96 +11,12 @@
   <meta name="apple-mobile-web-app-title" content="My Radio">
   <meta name="theme-color" content="#1a1a2e">
 
-  <!-- Icons -->
-  <link rel="apple-touch-icon" id="apple-icon" sizes="180x180">
-  <link rel="icon" id="favicon" type="image/png">
-  <link rel="manifest" id="pwa-manifest">
-
-  <!-- INBUILT ICON GENERATOR SCRIPT -->
-  <script>
-    (function generateInbuiltIcon() {
-      const canvas = document.createElement('canvas');
-      canvas.width = 180;
-      canvas.height = 180;
-      const ctx = canvas.getContext('2d');
-
-      const bgGrad = ctx.createLinearGradient(0, 0, 180, 180);
-      bgGrad.addColorStop(0, '#1f1d36');
-      bgGrad.addColorStop(1, '#0e131f');
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, 180, 180);
-
-      const circleGrad = ctx.createLinearGradient(20, 20, 160, 160);
-      circleGrad.addColorStop(0, '#ff6b6b');
-      circleGrad.addColorStop(1, '#ffa502');
-      ctx.beginPath();
-      ctx.arc(90, 95, 56, 0, Math.PI * 2);
-      ctx.fillStyle = circleGrad;
-      ctx.fill();
-
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 4;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(65, 75);
-      ctx.lineTo(48, 50);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(46, 48, 4.5, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffffff';
-      ctx.fill();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      if (ctx.roundRect) {
-        ctx.roundRect(52, 75, 76, 44, 10);
-      } else {
-        ctx.rect(52, 75, 76, 44);
-      }
-      ctx.fill();
-
-      ctx.fillStyle = '#ff6b6b';
-      ctx.beginPath();
-      ctx.arc(74, 97, 13, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(74, 97, 5, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#ffa502';
-      ctx.fillRect(96, 86, 22, 5);
-      ctx.fillRect(96, 94, 22, 5);
-      ctx.fillRect(96, 102, 22, 5);
-
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(90, 95, 68, -Math.PI * 0.75, -Math.PI * 0.25);
-      ctx.stroke();
-
-      const iconUrl = canvas.toDataURL('image/png');
-      window.generatedAppIcon = iconUrl;
-
-      document.getElementById('apple-icon').href = iconUrl;
-      document.getElementById('favicon').href = iconUrl;
-
-      const manifest = {
-        name: "My Radio Stations",
-        short_name: "Radio",
-        start_url: "./",
-        display: "standalone",
-        background_color: "#1a1a2e",
-        theme_color: "#1a1a2e",
-        icons: [{ src: iconUrl, sizes: "180x180", type: "image/png" }]
-      };
-      const stringManifest = JSON.stringify(manifest);
-      const manifestBlob = new Blob([stringManifest], { type: 'application/manifest+json' });
-      document.getElementById('pwa-manifest').href = URL.createObjectURL(manifestBlob);
-    })();
-  </script>
+  <!-- Direct Vector Icons for iOS (Instant Native Loading, Zero Script Crash) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231a1a2e'/%3E%3Ccircle cx='90' cy='95' r='56' fill='%23ff6b6b'/%3E%3Crect x='52' y='75' width='76' height='44' rx='10' fill='%23ffffff'/%3E%3Ccircle cx='74' cy='97' r='12' fill='%23ff6b6b'/%3E%3Ccircle cx='74' cy='97' r='5' fill='%23ffffff'/%3E%3Crect x='96' y='86' width='22' height='5' fill='%23ffa502' rx='2.5'/%3E%3Crect x='96' y='94' width='22' height='5' fill='%23ffa502' rx='2.5'/%3E%3Crect x='96' y='102' width='22' height='5' fill='%23ffa502' rx='2.5'/%3E%3Cpath d='M65 75 L48 50' stroke='%23ffffff' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='46' cy='48' r='4.5' fill='%23ffffff'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231a1a2e'/%3E%3Ccircle cx='90' cy='95' r='56' fill='%23ff6b6b'/%3E%3C/svg%3E">
+  
+  <!-- Safe Data-URI Manifest (Avoids iOS WebClip blob crash) -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22My%20Radio%22%2C%22short_name%22%3A%22Radio%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a1a2e%22%2C%22theme_color%22%3A%22%231a1a2e%22%7D">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -118,19 +34,22 @@
       background: linear-gradient(135deg, #1a1a2e, #16213e);
       color: #fff;
       min-height: 100vh;
-      padding: 20px;
-      padding-bottom: 80px;
+      /* iPhone Notch & Dynamic Island Safe Area adjustments */
+      padding-top: max(25px, env(safe-area-inset-top));
+      padding-bottom: max(60px, env(safe-area-inset-bottom));
+      padding-left: max(20px, env(safe-area-inset-left));
+      padding-right: max(20px, env(safe-area-inset-right));
     }
     
     .header {
       text-align: center;
-      padding: 20px 0 10px 0;
+      padding: 15px 0 10px 0;
     }
     
     .header h1 {
-      font-size: 2rem;
+      font-size: 1.9rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       background: linear-gradient(90deg, #ff6b6b, #ffa502);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -138,14 +57,14 @@
     
     .header p {
       color: #a0a0c0;
-      font-size: 1rem;
+      font-size: 0.95rem;
     }
     
     .visualizer {
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      height: 45px;
+      height: 40px;
       gap: 4px;
       margin: 15px 0;
     }
@@ -164,7 +83,7 @@
     
     @keyframes visualizer {
       0%, 100% { height: 6px; }
-      50% { height: 40px; }
+      50% { height: 38px; }
     }
     
     .now-playing {
@@ -175,19 +94,20 @@
       background: rgba(30, 30, 46, 0.7);
       border-radius: 15px;
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .now-playing h3 {
       color: #ff6b6b;
       margin-bottom: 6px;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
     
     .now-playing p {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 600;
       color: #fff;
     }
@@ -211,7 +131,6 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      backdrop-filter: blur(5px);
     }
     
     .nav-btn:active {
@@ -222,19 +141,20 @@
       max-width: 650px;
       margin: 0 auto;
       display: grid;
-      gap: 15px;
+      gap: 12px;
     }
     
     .station-card {
       background: rgba(30, 30, 46, 0.7);
-      border-radius: 18px;
-      padding: 18px;
+      border-radius: 16px;
+      padding: 15px 18px;
       display: flex;
       align-items: center;
       gap: 15px;
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: border 0.3s ease;
+      transition: all 0.3s ease;
     }
     
     .station-card.playing {
@@ -243,13 +163,13 @@
     }
     
     .station-icon {
-      width: 55px;
-      height: 55px;
-      border-radius: 15px;
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 22px;
       flex-shrink: 0;
     }
     
@@ -258,24 +178,24 @@
     }
     
     .station-name {
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
     
     .station-meta {
       color: #a0a0c0;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
     
     .play-btn {
-      width: 50px;
-      height: 50px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background: linear-gradient(135deg, #ff6b6b, #ffa502);
       border: none;
       color: white;
-      font-size: 20px;
+      font-size: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -293,15 +213,15 @@
     
     .developer-credit {
       text-align: center;
-      margin-top: 35px;
-      font-size: 1rem;
+      margin-top: 30px;
+      font-size: 0.95rem;
       color: #a0a0c0;
     }
     
     .developer-name {
       display: inline-block;
-      margin-top: 10px;
-      padding: 6px 18px;
+      margin-top: 8px;
+      padding: 5px 16px;
       background: rgba(255, 107, 107, 0.1);
       border-radius: 20px;
       font-weight: 600;
@@ -310,7 +230,6 @@
   </style>
 </head>
 <body>
-  <!-- Optimized HTML5 Audio element for iOS Safari -->
   <audio id="radioPlayer" playsinline webkit-playsinline></audio>
 
   <div class="header">
@@ -342,269 +261,242 @@
   </div>
 
   <script>
-    const stations = [
-      {
-        id: 'mirchi',
-        name: 'Radio Mirchi 98.3 FM',
-        description: 'Top Charts • Entertainment',
-        icon: 'fas fa-fire',
-        color: 'linear-gradient(135deg, #ff9800, #ffc107)',
-        streamUrl: 'https://eu8.fastcast4u.com/proxy/clyedupq?mp=/1'
-      },
-      {
-        id: 'bigfm',
-        name: '92.7 Big FM',
-        description: 'Bollywood Hits • Live Music',
-        icon: 'fas fa-music',
-        color: 'linear-gradient(135deg, #e91e63, #ff6b6b)',
-        streamUrl: 'https://stream.zeno.fm/dbstwo3dvhhtv'
-      },
-      {
-        id: 'nasha',
-        name: 'Radio Nasha 91.9 FM',
-        description: 'Fun & Comedy • Hindi Mix',
-        icon: 'fas fa-laugh',
-        color: 'linear-gradient(135deg, #4caf50, #8bc34a)',
-        streamUrl: 'https://stream.zeno.fm/zu59ykebs2zuv'
-      },
-      {
-        id: 'ishq',
-        name: 'Ishq FM',
-        description: 'Romantic Hits • Love Songs',
-        icon: 'fas fa-heart',
-        color: 'linear-gradient(135deg, #9c27b0, #673ab7)',
-        streamUrl: 'https://drive.uber.radio/uber/bollywoodlove/icecast.audio'
-      },
-      {
-        id: 'akashwani-mumbai',
-        name: 'Akashwani Mumbai',
-        description: 'News • Culture • Regional Mix',
-        icon: 'fas fa-tower-broadcast',
-        color: 'linear-gradient(135deg, #00b4db, #0083b0)',
-        streamUrl: 'https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio010/hlspbaudio010_Auto.m3u8'
-      },
-      {
-        id: 'vividh-bharati-mumbai',
-        name: 'Vividh Bharati Mumbai',
-        description: 'Classic Melodies • Retro Bollywood',
-        icon: 'fas fa-record-vinyl',
-        color: 'linear-gradient(135deg, #11998e, #38ef7d)',
-        streamUrl: 'https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio011/hlspbaudio011_Auto.m3u8'
-      }
-    ];
+    document.addEventListener('DOMContentLoaded', () => {
+      const stations = [
+        {
+          id: 'mirchi',
+          name: 'Radio Mirchi 98.3 FM',
+          description: 'Top Charts • Entertainment',
+          icon: 'fas fa-fire',
+          color: 'linear-gradient(135deg, #ff9800, #ffc107)',
+          streamUrl: 'https://eu8.fastcast4u.com/proxy/clyedupq?mp=/1'
+        },
+        {
+          id: 'bigfm',
+          name: '92.7 Big FM',
+          description: 'Bollywood Hits • Live Music',
+          icon: 'fas fa-music',
+          color: 'linear-gradient(135deg, #e91e63, #ff6b6b)',
+          streamUrl: 'https://stream.zeno.fm/dbstwo3dvhhtv'
+        },
+        {
+          id: 'nasha',
+          name: 'Radio Nasha 91.9 FM',
+          description: 'Fun & Comedy • Hindi Mix',
+          icon: 'fas fa-laugh',
+          color: 'linear-gradient(135deg, #4caf50, #8bc34a)',
+          streamUrl: 'https://stream.zeno.fm/zu59ykebs2zuv'
+        },
+        {
+          id: 'ishq',
+          name: 'Ishq FM',
+          description: 'Romantic Hits • Love Songs',
+          icon: 'fas fa-heart',
+          color: 'linear-gradient(135deg, #9c27b0, #673ab7)',
+          streamUrl: 'https://drive.uber.radio/uber/bollywoodlove/icecast.audio'
+        },
+        {
+          id: 'akashwani-mumbai',
+          name: 'Akashwani Mumbai',
+          description: 'News • Culture • Regional Mix',
+          icon: 'fas fa-tower-broadcast',
+          color: 'linear-gradient(135deg, #00b4db, #0083b0)',
+          streamUrl: 'https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio010/hlspbaudio010_Auto.m3u8'
+        },
+        {
+          id: 'vividh-bharati-mumbai',
+          name: 'Vividh Bharati Mumbai',
+          description: 'Classic Melodies • Retro Bollywood',
+          icon: 'fas fa-record-vinyl',
+          color: 'linear-gradient(135deg, #11998e, #38ef7d)',
+          streamUrl: 'https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio011/hlspbaudio011_Auto.m3u8'
+        }
+      ];
 
-    const audio = document.getElementById('radioPlayer');
-    let currentStation = null;
-    let hls = null;
-    let stallTimeout = null;
+      const audio = document.getElementById('radioPlayer');
+      let currentStation = null;
+      let hls = null;
 
-    const stationsContainer = document.getElementById('stationsContainer');
-    const nowPlayingText = document.getElementById('nowPlayingText');
-    const visualizer = document.getElementById('visualizer');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
+      const stationsContainer = document.getElementById('stationsContainer');
+      const nowPlayingText = document.getElementById('nowPlayingText');
+      const visualizer = document.getElementById('visualizer');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
 
-    // Visualizer Bars
-    for (let i = 0; i < 24; i++) {
-      const bar = document.createElement('div');
-      bar.className = 'bar';
-      bar.style.animationDelay = `${(i % 6) * 0.18}s`;
-      visualizer.appendChild(bar);
-    }
-
-    // Populate Cards
-    stations.forEach(station => {
-      const stationCard = document.createElement('div');
-      stationCard.className = 'station-card';
-      stationCard.id = `station-${station.id}`;
-      
-      stationCard.innerHTML = `
-        <div class="station-icon" style="background: ${station.color};">
-          <i class="${station.icon}"></i>
-        </div>
-        <div class="station-info">
-          <div class="station-name">${station.name}</div>
-          <div class="station-meta">${station.description}</div>
-        </div>
-        <button class="play-btn" data-id="${station.id}">
-          <i class="fas fa-play"></i>
-        </button>
-      `;
-      stationsContainer.appendChild(stationCard);
-    });
-
-    // Update MediaSession with reliable HTTPS artwork for iOS lock screens
-    function updateMediaSession(station) {
-      if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: station.name,
-          artist: station.description,
-          album: 'Live FM Radio',
-          artwork: [
-            { src: 'https://cdn-icons-png.flaticon.com/512/3075/3075908.png', sizes: '512x512', type: 'image/png' }
-          ]
-        });
-
-        navigator.mediaSession.setActionHandler('play', () => audio.play());
-        navigator.mediaSession.setActionHandler('pause', () => audio.pause());
-        navigator.mediaSession.setActionHandler('nexttrack', () => changeStation(1));
-        navigator.mediaSession.setActionHandler('previoustrack', () => changeStation(-1));
-      }
-    }
-
-    function setPlaybackState(isPlaying) {
-      if (isPlaying) {
-        visualizer.classList.add('active');
-        if (currentStation) updatePlayButton(currentStation.id, true);
-        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
-      } else {
-        visualizer.classList.remove('active');
-        if (currentStation) updatePlayButton(currentStation.id, false);
-        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
-      }
-    }
-
-    function playStation(station) {
-      if (stallTimeout) clearTimeout(stallTimeout);
-      
-      if (currentStation && currentStation.id !== station.id) {
-        updatePlayButton(currentStation.id, false);
-      }
-      
-      currentStation = station;
-      highlightPlayingStation(station.id);
-      nowPlayingText.textContent = `Connecting to ${station.name}...`;
-
-      // Clean up previous HLS instance if active
-      if (hls) {
-        hls.destroy();
-        hls = null;
+      // Visualizer Bars
+      for (let i = 0; i < 24; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.animationDelay = `${(i % 6) * 0.18}s`;
+        visualizer.appendChild(bar);
       }
 
-      const isM3u8 = station.streamUrl.includes('.m3u8');
-      const canPlayNativeHls = audio.canPlayType('application/vnd.apple.mpegurl');
+      // Populate Cards
+      stations.forEach(station => {
+        const stationCard = document.createElement('div');
+        stationCard.className = 'station-card';
+        stationCard.id = `station-${station.id}`;
+        
+        stationCard.innerHTML = `
+          <div class="station-icon" style="background: ${station.color};">
+            <i class="${station.icon}"></i>
+          </div>
+          <div class="station-info">
+            <div class="station-name">${station.name}</div>
+            <div class="station-meta">${station.description}</div>
+          </div>
+          <button class="play-btn" data-id="${station.id}">
+            <i class="fas fa-play"></i>
+          </button>
+        `;
+        stationsContainer.appendChild(stationCard);
+      });
 
-      // Use Hls.js for desktop/Android browsers that don't support native HLS
-      if (isM3u8 && !canPlayNativeHls && Hls.isSupported()) {
-        hls = new Hls({ enableWorker: true });
-        hls.loadSource(station.streamUrl);
-        hls.attachMedia(audio);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          audio.play().then(() => updateMediaSession(station)).catch(handlePlaybackError);
-        });
-        hls.on(Hls.Events.ERROR, (event, data) => {
-          if (data.fatal) {
-            nowPlayingText.textContent = 'Stream unavailable. Try another.';
-            setPlaybackState(false);
-          }
-        });
-      } else {
-        // Native iOS Safari path (No audio.load() to preserve user gesture)
-        audio.src = station.streamUrl;
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => updateMediaSession(station))
-            .catch(handlePlaybackError);
+      function updateMediaSession(station) {
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: station.name,
+            artist: station.description,
+            album: 'Live Radio',
+            artwork: [
+              { src: 'https://cdn-icons-png.flaticon.com/512/3075/3075908.png', sizes: '512x512', type: 'image/png' }
+            ]
+          });
+
+          navigator.mediaSession.setActionHandler('play', () => audio.play());
+          navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+          navigator.mediaSession.setActionHandler('nexttrack', () => changeStation(1));
+          navigator.mediaSession.setActionHandler('previoustrack', () => changeStation(-1));
         }
       }
-    }
 
-    function handlePlaybackError(err) {
-      // Ignore AbortError caused when user rapidly taps another station
-      if (err.name === 'AbortError') return;
-      console.warn('Playback error:', err);
-      nowPlayingText.textContent = 'Stream temporarily unavailable.';
-      setPlaybackState(false);
-    }
-
-    function togglePlay(stationId) {
-      const station = stations.find(s => s.id === stationId);
-      if (!station) return;
-      
-      if (currentStation && currentStation.id === stationId) {
-        if (audio.paused) {
-          audio.play().catch(handlePlaybackError);
+      function setPlaybackState(isPlaying) {
+        if (isPlaying) {
+          visualizer.classList.add('active');
+          if (currentStation) updatePlayButton(currentStation.id, true);
+          if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
         } else {
-          audio.pause();
+          visualizer.classList.remove('active');
+          if (currentStation) updatePlayButton(currentStation.id, false);
+          if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
         }
-      } else {
-        playStation(station);
       }
-    }
 
-    function changeStation(direction) {
-      const currentIndex = currentStation ? stations.findIndex(s => s.id === currentStation.id) : 0;
-      let targetIndex = currentIndex + direction;
-      
-      if (targetIndex >= stations.length) targetIndex = 0;
-      if (targetIndex < 0) targetIndex = stations.length - 1;
-
-      playStation(stations[targetIndex]);
-    }
-
-    // Audio State Event Listeners
-    audio.addEventListener('playing', () => {
-      setPlaybackState(true);
-      nowPlayingText.textContent = currentStation.name;
-    });
-
-    audio.addEventListener('pause', () => {
-      setPlaybackState(false);
-      nowPlayingText.textContent = `Paused (${currentStation ? currentStation.name : ''})`;
-    });
-
-    audio.addEventListener('waiting', () => {
-      nowPlayingText.textContent = 'Buffering...';
-    });
-
-    // iOS HLS Stream Recovery: If stream stalls for > 4s, automatically reconnect
-    audio.addEventListener('stalled', () => {
-      if (stallTimeout) clearTimeout(stallTimeout);
-      stallTimeout = setTimeout(() => {
-        if (currentStation && !audio.paused) {
-          audio.src = currentStation.streamUrl;
-          audio.play().catch(() => {});
+      function playStation(station) {
+        if (currentStation && currentStation.id !== station.id) {
+          updatePlayButton(currentStation.id, false);
         }
-      }, 4000);
-    });
+        
+        currentStation = station;
+        highlightPlayingStation(station.id);
+        nowPlayingText.textContent = `Connecting to ${station.name}...`;
 
-    audio.addEventListener('error', (e) => {
-      // Avoid throwing errors during standard pause/teardown
-      if (!audio.src || audio.src === window.location.href) return;
-      nowPlayingText.textContent = 'Error connecting to radio.';
-      setPlaybackState(false);
-    });
+        if (hls) {
+          hls.destroy();
+          hls = null;
+        }
 
-    stationsContainer.addEventListener('click', (e) => {
-      const btn = e.target.closest('.play-btn');
-      if (btn) {
-        const id = btn.getAttribute('data-id');
-        togglePlay(id);
+        const isM3u8 = station.streamUrl.includes('.m3u8');
+        const canPlayNativeHls = audio.canPlayType('application/vnd.apple.mpegurl');
+
+        if (isM3u8 && !canPlayNativeHls && Hls.isSupported()) {
+          hls = new Hls({ enableWorker: true });
+          hls.loadSource(station.streamUrl);
+          hls.attachMedia(audio);
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            audio.play().then(() => updateMediaSession(station)).catch(handleError);
+          });
+          hls.on(Hls.Events.ERROR, (e, data) => {
+            if (data.fatal) {
+              nowPlayingText.textContent = 'Stream unavailable. Try another.';
+              setPlaybackState(false);
+            }
+          });
+        } else {
+          audio.src = station.streamUrl;
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => updateMediaSession(station))
+              .catch(handleError);
+          }
+        }
+      }
+
+      function handleError(err) {
+        if (err.name === 'AbortError') return;
+        nowPlayingText.textContent = 'Stream unavailable. Try another.';
+        setPlaybackState(false);
+      }
+
+      function togglePlay(stationId) {
+        const station = stations.find(s => s.id === stationId);
+        if (!station) return;
+        
+        if (currentStation && currentStation.id === stationId) {
+          if (audio.paused) {
+            audio.play().catch(handleError);
+          } else {
+            audio.pause();
+          }
+        } else {
+          playStation(station);
+        }
+      }
+
+      function changeStation(direction) {
+        const currentIndex = currentStation ? stations.findIndex(s => s.id === currentStation.id) : 0;
+        let targetIndex = currentIndex + direction;
+        
+        if (targetIndex >= stations.length) targetIndex = 0;
+        if (targetIndex < 0) targetIndex = stations.length - 1;
+
+        playStation(stations[targetIndex]);
+      }
+
+      audio.addEventListener('playing', () => {
+        setPlaybackState(true);
+        nowPlayingText.textContent = currentStation.name;
+      });
+
+      audio.addEventListener('pause', () => {
+        setPlaybackState(false);
+        nowPlayingText.textContent = `Paused (${currentStation ? currentStation.name : ''})`;
+      });
+
+      audio.addEventListener('waiting', () => {
+        nowPlayingText.textContent = 'Buffering...';
+      });
+
+      stationsContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.play-btn');
+        if (btn) {
+          togglePlay(btn.getAttribute('data-id'));
+        }
+      });
+
+      nextBtn.addEventListener('click', () => changeStation(1));
+      prevBtn.addEventListener('click', () => changeStation(-1));
+
+      function updatePlayButton(stationId, isPlaying) {
+        const button = document.querySelector(`.play-btn[data-id="${stationId}"]`);
+        if (!button) return;
+        const icon = button.querySelector('i');
+        if (isPlaying) {
+          button.classList.add('playing');
+          icon.className = 'fas fa-pause';
+        } else {
+          button.classList.remove('playing');
+          icon.className = 'fas fa-play';
+        }
+      }
+
+      function highlightPlayingStation(stationId) {
+        document.querySelectorAll('.station-card').forEach(card => card.classList.remove('playing'));
+        const activeCard = document.getElementById(`station-${stationId}`);
+        if (activeCard) activeCard.classList.add('playing');
       }
     });
-
-    nextBtn.addEventListener('click', () => changeStation(1));
-    prevBtn.addEventListener('click', () => changeStation(-1));
-
-    function updatePlayButton(stationId, isPlaying) {
-      const button = document.querySelector(`.play-btn[data-id="${stationId}"]`);
-      if (!button) return;
-      const icon = button.querySelector('i');
-      if (isPlaying) {
-        button.classList.add('playing');
-        icon.className = 'fas fa-pause';
-      } else {
-        button.classList.remove('playing');
-        icon.className = 'fas fa-play';
-      }
-    }
-
-    function highlightPlayingStation(stationId) {
-      document.querySelectorAll('.station-card').forEach(card => card.classList.remove('playing'));
-      const activeCard = document.getElementById(`station-${stationId}`);
-      if (activeCard) activeCard.classList.add('playing');
-    }
   </script>
 </body>
 </html>
