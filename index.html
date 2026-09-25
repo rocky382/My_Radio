@@ -2,21 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>My Radio Stations</title>
   
   <!-- iOS PWA Settings -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="My Radio">
-  <meta name="theme-color" content="#12131C">
+  <meta name="theme-color" content="#1a1a2e">
 
-  <!-- Dynamic Icon & Manifest Placeholders -->
+  <!-- Placeholders for Inbuilt Generated Icons -->
   <link rel="apple-touch-icon" id="apple-icon" sizes="180x180">
   <link rel="icon" id="favicon" type="image/png">
   <link rel="manifest" id="pwa-manifest">
 
-  <!-- Instant Canvas Icon & Web Manifest Generator -->
+  <!-- INBUILT ICON GENERATOR SCRIPT (Executes instantly before rendering) -->
   <script>
     (function generateInbuiltIcon() {
       const canvas = document.createElement('canvas');
@@ -24,12 +24,14 @@
       canvas.height = 180;
       const ctx = canvas.getContext('2d');
 
+      // 1. Dark solid background (Prevents iOS transparency bug)
       const bgGrad = ctx.createLinearGradient(0, 0, 180, 180);
       bgGrad.addColorStop(0, '#1f1d36');
       bgGrad.addColorStop(1, '#0e131f');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, 180, 180);
 
+      // 2. Vibrant gradient inner circle
       const circleGrad = ctx.createLinearGradient(20, 20, 160, 160);
       circleGrad.addColorStop(0, '#ff6b6b');
       circleGrad.addColorStop(1, '#ffa502');
@@ -38,6 +40,7 @@
       ctx.fillStyle = circleGrad;
       ctx.fill();
 
+      // 3. Antenna
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 4;
       ctx.lineCap = 'round';
@@ -46,11 +49,13 @@
       ctx.lineTo(48, 50);
       ctx.stroke();
 
+      // Antenna tip
       ctx.beginPath();
       ctx.arc(46, 48, 4.5, 0, Math.PI * 2);
       ctx.fillStyle = '#ffffff';
       ctx.fill();
 
+      // 4. Radio Body
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
       if (ctx.roundRect) {
@@ -60,6 +65,7 @@
       }
       ctx.fill();
 
+      // 5. Speaker Grill
       ctx.fillStyle = '#ff6b6b';
       ctx.beginPath();
       ctx.arc(74, 97, 13, 0, Math.PI * 2);
@@ -70,425 +76,281 @@
       ctx.arc(74, 97, 5, 0, Math.PI * 2);
       ctx.fill();
 
+      // 6. Tuner Display & Dials
       ctx.fillStyle = '#ffa502';
       ctx.fillRect(96, 86, 22, 5);
       ctx.fillRect(96, 94, 22, 5);
       ctx.fillRect(96, 102, 22, 5);
 
+      // 7. Radio Waves
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.arc(90, 95, 68, -Math.PI * 0.75, -Math.PI * 0.25);
       ctx.stroke();
 
+      // Export base64 Data URL
       const iconUrl = canvas.toDataURL('image/png');
       window.generatedAppIcon = iconUrl;
 
+      // Assign to iOS Home Screen Icon & Favicon
       document.getElementById('apple-icon').href = iconUrl;
       document.getElementById('favicon').href = iconUrl;
 
+      // Inline PWA Web Manifest
       const manifest = {
         name: "My Radio Stations",
         short_name: "Radio",
         start_url: "./",
         display: "standalone",
-        background_color: "#12131C",
-        theme_color: "#12131C",
+        background_color: "#1a1a2e",
+        theme_color: "#1a1a2e",
         icons: [{ src: iconUrl, sizes: "180x180", type: "image/png" }]
       };
-      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-      document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
+      const stringManifest = JSON.stringify(manifest);
+      const manifestBlob = new Blob([stringManifest], { type: 'application/manifest+json' });
+      document.getElementById('pwa-manifest').href = URL.createObjectURL(manifestBlob);
     })();
   </script>
 
-  <!-- HLS Stream Support for .m3u8 feeds -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <!-- Font Awesome & HLS Library for .m3u8 stream compatibility -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <style>
-    :root {
-      --primary: #ff6b6b;
-      --secondary: #ffa502;
-      --bg-dark: #12131C;
-      --card-bg: rgba(26, 28, 44, 0.75);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --text-main: #ffffff;
-      --text-muted: #9598b5;
-    }
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
+  <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
     }
-
+    
     body {
-      background: radial-gradient(circle at top, #1e2038 0%, var(--bg-dark) 100%);
-      color: var(--text-main);
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: #fff;
       min-height: 100vh;
-      padding: max(20px, env(safe-area-inset-top)) 20px max(40px, env(safe-area-inset-bottom)) 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      padding: 20px;
+      padding-bottom: 80px;
     }
-
-    .app-container {
-      width: 100%;
-      max-width: 580px;
-    }
-
+    
     .header {
       text-align: center;
-      padding: 15px 0 10px 0;
+      padding: 20px 0 10px 0;
     }
-
+    
     .header h1 {
-      font-size: 1.85rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #ff6b6b, #ffa502);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
     }
-
+    
     .header p {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-top: 4px;
+      color: #a0a0c0;
+      font-size: 1rem;
     }
-
-    /* Live Equalizer Bars */
+    
     .visualizer {
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      height: 38px;
+      height: 45px;
       gap: 4px;
       margin: 15px 0;
     }
-
+    
     .bar {
       width: 4px;
-      height: 4px;
-      background: linear-gradient(to top, var(--primary), var(--secondary));
-      border-radius: 4px;
-      transition: height 0.25s ease;
+      height: 6px;
+      background: linear-gradient(to top, #ff6b6b, #ffa502);
+      border-radius: 2px;
+      transition: height 0.2s ease;
     }
-
+    
     .visualizer.active .bar {
-      animation: bounce 1.1s ease-in-out infinite alternate;
+      animation: visualizer 1.2s infinite ease-in-out;
     }
-
-    @keyframes bounce {
-      0% { height: 4px; opacity: 0.3; }
-      100% { height: 35px; opacity: 1; }
+    
+    @keyframes visualizer {
+      0%, 100% { height: 6px; }
+      50% { height: 40px; }
     }
-
-    /* Player Status Card */
+    
     .now-playing {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 16px 20px;
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      position: relative;
+      padding: 15px;
+      margin: 15px auto;
+      max-width: 650px;
+      background: rgba(30, 30, 46, 0.7);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
-    .live-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 1px;
+    
+    .now-playing h3 {
+      color: #ff6b6b;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
       text-transform: uppercase;
-      color: #fff;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 3px 10px;
-      border-radius: 20px;
-      margin-bottom: 8px;
-      transition: all 0.3s ease;
+      letter-spacing: 1px;
     }
-
-    .live-badge.live {
-      background: rgba(255, 75, 75, 0.25);
-      border-color: rgba(255, 75, 75, 0.5);
-    }
-
-    .live-badge.live .dot {
-      background: #ff4757;
-      box-shadow: 0 0 8px #ff4757;
-      animation: pulse 1.4s infinite;
-    }
-
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #777;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
-    }
-
-    .now-playing-title {
+    
+    .now-playing p {
       font-size: 1.15rem;
-      font-weight: 700;
-      color: #ffffff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-weight: 600;
+      color: #fff;
     }
-
-    /* Quick Toolbar */
-    .toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin: 16px 4px;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 8px 16px;
-      border-radius: 14px;
-    }
-
-    .volume-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: 1;
-    }
-
-    .volume-slider {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 5px;
-      border-radius: 5px;
-      background: rgba(255, 255, 255, 0.15);
-      outline: none;
-    }
-
-    .volume-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--secondary);
-      cursor: pointer;
-    }
-
-    .timer-btn {
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: var(--text-muted);
-      border-radius: 12px;
-      padding: 4px 10px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.2s;
-    }
-
-    .timer-btn.active {
-      color: var(--secondary);
-      border-color: var(--secondary);
-    }
-
-    /* Navigation Controls */
+    
     .controls {
       display: flex;
       justify-content: center;
-      align-items: center;
-      gap: 20px;
-      margin: 15px 0 22px 0;
+      gap: 25px;
+      margin: 20px 0;
     }
-
+    
     .nav-btn {
-      width: 52px;
-      height: 52px;
+      width: 55px;
+      height: 55px;
       border-radius: 50%;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
-      font-size: 1.15rem;
+      font-size: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.2s ease;
+      backdrop-filter: blur(5px);
     }
-
+    
     .nav-btn:active {
-      transform: scale(0.92);
-      background: rgba(255, 255, 255, 0.12);
+      transform: scale(0.95);
     }
-
-    /* Station List */
+    
     .stations-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      max-width: 650px;
+      margin: 0 auto;
+      display: grid;
+      gap: 15px;
     }
-
+    
     .station-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 14px 16px;
+      background: rgba(30, 30, 46, 0.7);
+      border-radius: 18px;
+      padding: 18px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transition: transform 0.2s, border 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-      user-select: none;
+      gap: 15px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: border 0.3s ease;
     }
-
-    .station-card:active {
-      transform: scale(0.985);
-    }
-
+    
     .station-card.playing {
-      border-color: rgba(255, 107, 107, 0.6);
-      box-shadow: 0 4px 20px rgba(255, 107, 107, 0.25);
+      border: 1px solid #ff6b6b;
+      box-shadow: 0 0 15px rgba(255, 107, 107, 0.35);
     }
-
+    
     .station-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+      width: 55px;
+      height: 55px;
+      border-radius: 15px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
-      color: #fff;
+      font-size: 24px;
       flex-shrink: 0;
-      pointer-events: none; /* Prevents event conflicts */
     }
-
+    
     .station-info {
       flex: 1;
-      min-width: 0;
-      pointer-events: none;
     }
-
+    
     .station-name {
-      font-size: 1rem;
+      font-size: 1.15rem;
       font-weight: 600;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      margin-bottom: 4px;
     }
-
+    
     .station-meta {
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      color: #a0a0c0;
+      font-size: 0.85rem;
     }
-
+    
     .play-btn {
-      width: 44px;
-      height: 44px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      background: linear-gradient(135deg, #ff6b6b, #ffa502);
       border: none;
-      color: #fff;
-      font-size: 1rem;
+      color: white;
+      font-size: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
       flex-shrink: 0;
-      pointer-events: none; /* Card handles the click directly */
-      transition: transform 0.15s ease;
     }
-
+    
+    .play-btn:active {
+      transform: scale(0.95);
+    }
+    
     .play-btn.playing {
       background: linear-gradient(135deg, #ff416c, #ff4b2b);
     }
-
-    /* Footer & Credit */
+    
     .developer-credit {
       text-align: center;
-      margin-top: 30px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
+      margin-top: 35px;
+      font-size: 1rem;
+      color: #a0a0c0;
     }
-
+    
     .developer-name {
       display: inline-block;
-      margin-top: 6px;
-      padding: 4px 14px;
+      margin-top: 10px;
+      padding: 6px 18px;
       background: rgba(255, 107, 107, 0.1);
       border-radius: 20px;
-      font-weight: 700;
-      color: var(--primary);
-      letter-spacing: 0.5px;
+      font-weight: 600;
+      color: #ff6b6b;
     }
   </style>
 </head>
 <body>
-
+  <!-- Embedded audio tag with iOS attributes -->
   <audio id="radioPlayer" playsinline webkit-playsinline preload="none"></audio>
 
-  <div class="app-container">
-    <div class="header">
-      <h1><i class="fas fa-tower-broadcast"></i> My Radio</h1>
-      <p>Continuous HD Stream for Mobile & CarPlay</p>
-    </div>
-    
-    <div class="visualizer" id="visualizer"></div>
-    
-    <div class="now-playing">
-      <div class="live-badge" id="liveBadge">
-        <span class="dot"></span>
-        <span id="statusText">STANDBY</span>
-      </div>
-      <div class="now-playing-title" id="nowPlayingText">Select a station to start</div>
-    </div>
-
-    <div class="toolbar">
-      <div class="volume-container">
-        <i class="fas fa-volume-high" id="volumeIcon" style="font-size: 0.85rem; color: var(--text-muted); cursor:pointer;"></i>
-        <input type="range" min="0" max="1" step="0.05" value="1" class="volume-slider" id="volumeSlider" aria-label="Volume">
-      </div>
-      <button class="timer-btn" id="sleepTimerBtn" aria-label="Sleep Timer">
-        <i class="fas fa-moon"></i> <span id="timerLabel">Timer: Off</span>
-      </button>
-    </div>
-    
-    <div class="controls">
-      <button class="nav-btn" id="prevBtn" aria-label="Previous Station">
-        <i class="fas fa-backward-step"></i>
-      </button>
-      <button class="nav-btn" id="nextBtn" aria-label="Next Station">
-        <i class="fas fa-forward-step"></i>
-      </button>
-    </div>
-    
-    <div class="stations-container" id="stationsContainer"></div>
-    
-    <div class="developer-credit">
-      <p>Crafted with <i class="fas fa-heart" style="color: #ff6b6b;"></i> for crisp audio</p>
-      <div class="developer-name">ROCKY</div>
-    </div>
+  <div class="header">
+    <h1><i class="fas fa-music"></i> My Radio Stations</h1>
+    <p>Stream live to your phone & car</p>
+  </div>
+  
+  <div class="visualizer" id="visualizer"></div>
+  
+  <div class="now-playing" id="nowPlaying">
+    <h3 id="statusLabel">Status</h3>
+    <p id="nowPlayingText">Select a station to start</p>
+  </div>
+  
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous Station">
+      <i class="fas fa-step-backward"></i>
+    </button>
+    <button class="nav-btn" id="nextBtn" aria-label="Next Station">
+      <i class="fas fa-step-forward"></i>
+    </button>
+  </div>
+  
+  <div class="stations-container" id="stationsContainer"></div>
+  
+  <div class="developer-credit">
+    <p>Developed with <i class="fas fa-heart" style="color: #ff6b6b;"></i> by</p>
+    <div class="developer-name">ROCKY</div>
   </div>
 
   <script>
@@ -496,7 +358,7 @@
       {
         id: 'mirchi',
         name: 'Radio Mirchi 98.3 FM',
-        description: 'Top Bollywood Charts • Live',
+        description: 'Top Charts • Entertainment',
         icon: 'fas fa-fire',
         color: 'linear-gradient(135deg, #ff9800, #ffc107)',
         streamUrl: 'https://eu8.fastcast4u.com/proxy/clyedupq?mp=/1'
@@ -504,7 +366,7 @@
       {
         id: 'bigfm',
         name: '92.7 Big FM',
-        description: 'Retro & New Bollywood Hits',
+        description: 'Bollywood Hits • Live Music',
         icon: 'fas fa-music',
         color: 'linear-gradient(135deg, #e91e63, #ff6b6b)',
         streamUrl: 'https://stream.zeno.fm/dbstwo3dvhhtv'
@@ -512,15 +374,15 @@
       {
         id: 'nasha',
         name: 'Radio Nasha 91.9 FM',
-        description: 'Classic Melodies & Fun',
-        icon: 'fas fa-compact-disc',
-        color: 'linear-gradient(135deg, #00b894, #00cec9)',
+        description: 'Fun & Comedy • Hindi Mix',
+        icon: 'fas fa-laugh',
+        color: 'linear-gradient(135deg, #4caf50, #8bc34a)',
         streamUrl: 'https://stream.zeno.fm/zu59ykebs2zuv'
       },
       {
         id: 'ishq',
         name: 'Ishq FM',
-        description: 'Romantic Hits & Acoustic Mix',
+        description: 'Romantic Hits • Love Songs',
         icon: 'fas fa-heart',
         color: 'linear-gradient(135deg, #9c27b0, #673ab7)',
         streamUrl: 'https://drive.uber.radio/uber/bollywoodlove/icecast.audio'
@@ -528,82 +390,70 @@
       {
         id: 'akashwani-mumbai',
         name: 'Akashwani Mumbai',
-        description: 'AIR Mumbai • News, Culture & Live',
-        icon: 'fas fa-landmark',
-        color: 'linear-gradient(135deg, #0984e3, #74b9ff)',
+        description: 'News • Culture • Regional Mix',
+        icon: 'fas fa-tower-broadcast',
+        color: 'linear-gradient(135deg, #00b4db, #0083b0)',
         streamUrl: 'https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio010/hlspbaudio010_Auto.m3u8'
       },
       {
         id: 'vividh-bharati-mumbai',
         name: 'Vividh Bharati Mumbai',
-        description: 'AIR Vividh Bharati • Classic Hits & Sangeet',
-        icon: 'fas fa-radio',
-        color: 'linear-gradient(135deg, #e17055, #d63031)',
+        description: 'Classic Melodies • Retro Bollywood',
+        icon: 'fas fa-record-vinyl',
+        color: 'linear-gradient(135deg, #11998e, #38ef7d)',
         streamUrl: 'https://airhlspush.pc.cdn.bitgravity.com/httppush/hlspbaudio011/hlspbaudio011_Auto.m3u8'
       }
     ];
 
     const audio = document.getElementById('radioPlayer');
+    let currentStation = null;
+    let hls = null;
+
     const stationsContainer = document.getElementById('stationsContainer');
     const nowPlayingText = document.getElementById('nowPlayingText');
-    const liveBadge = document.getElementById('liveBadge');
-    const statusText = document.getElementById('statusText');
     const visualizer = document.getElementById('visualizer');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const volumeSlider = document.getElementById('volumeSlider');
-    const volumeIcon = document.getElementById('volumeIcon');
-    const sleepTimerBtn = document.getElementById('sleepTimerBtn');
-    const timerLabel = document.getElementById('timerLabel');
-
-    let currentStation = null;
-    let hlsInstance = null;
-    let sleepTimeout = null;
-    const timerDurations = [0, 15, 30, 45, 60];
-    let currentTimerIndex = 0;
 
     // Visualizer Bars
-    for (let i = 0; i < 26; i++) {
+    for (let i = 0; i < 24; i++) {
       const bar = document.createElement('div');
       bar.className = 'bar';
-      bar.style.animationDelay = `${(i * 0.08) % 1.1}s`;
+      bar.style.animationDelay = `${(i % 6) * 0.18}s`;
       visualizer.appendChild(bar);
     }
 
-    // Render Station UI
-    function renderStations() {
-      stationsContainer.innerHTML = '';
-      stations.forEach(station => {
-        const card = document.createElement('div');
-        card.className = 'station-card';
-        card.id = `station-${station.id}`;
-        card.innerHTML = `
-          <div class="station-icon" style="background: ${station.color};">
-            <i class="${station.icon}"></i>
-          </div>
-          <div class="station-info">
-            <div class="station-name">${station.name}</div>
-            <div class="station-meta">${station.description}</div>
-          </div>
-          <div class="play-btn">
-            <i class="fas fa-play"></i>
-          </div>
-        `;
-        // Clean single listener on the card itself
-        card.addEventListener('click', () => togglePlay(station.id));
-        stationsContainer.appendChild(card);
-      });
-    }
-    renderStations();
+    // Populate Station Cards
+    stations.forEach(station => {
+      const stationCard = document.createElement('div');
+      stationCard.className = 'station-card';
+      stationCard.id = `station-${station.id}`;
+      
+      stationCard.innerHTML = `
+        <div class="station-icon" style="background: ${station.color};">
+          <i class="${station.icon}"></i>
+        </div>
+        <div class="station-info">
+          <div class="station-name">${station.name}</div>
+          <div class="station-meta">${station.description}</div>
+        </div>
+        <button class="play-btn" data-id="${station.id}">
+          <i class="fas fa-play"></i>
+        </button>
+      `;
+      stationsContainer.appendChild(stationCard);
+    });
 
-    // Lockscreen & CarPlay Integration
+    // Update Bluetooth & Lock Screen Information
     function updateMediaSession(station) {
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: station.name,
           artist: station.description,
           album: 'Live Radio',
-          artwork: [{ src: window.generatedAppIcon || '', sizes: '180x180', type: 'image/png' }]
+          artwork: [
+            { src: window.generatedAppIcon, sizes: '180x180', type: 'image/png' }
+          ]
         });
 
         navigator.mediaSession.setActionHandler('play', () => audio.play());
@@ -616,88 +466,68 @@
     function setPlaybackState(isPlaying) {
       if (isPlaying) {
         visualizer.classList.add('active');
-        liveBadge.classList.add('live');
-        statusText.textContent = "ON AIR";
-        if (currentStation) updateCardState(currentStation.id, true);
+        if (currentStation) updatePlayButton(currentStation.id, true);
         if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
       } else {
         visualizer.classList.remove('active');
-        liveBadge.classList.remove('live');
-        statusText.textContent = "PAUSED";
-        if (currentStation) updateCardState(currentStation.id, false);
+        if (currentStation) updatePlayButton(currentStation.id, false);
         if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
-      }
-    }
-
-    // Attach stream (supports HLS .m3u8 & regular MP3/AAC with auto-recovery)
-    function attachStream(url) {
-      if (hlsInstance) {
-        hlsInstance.destroy();
-        hlsInstance = null;
-      }
-
-      if (url.includes('.m3u8')) {
-        if (audio.canPlayType('application/vnd.apple.mpegurl')) {
-          // Native Safari / iOS
-          audio.src = url;
-        } else if (Hls && Hls.isSupported()) {
-          // Android / Chrome / Edge
-          hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: true });
-          hlsInstance.loadSource(url);
-          hlsInstance.attachMedia(audio);
-
-          // Stream recovery logic
-          hlsInstance.on(Hls.Events.ERROR, function (event, data) {
-            if (data.fatal) {
-              switch (data.type) {
-                case Hls.ErrorTypes.NETWORK_ERROR:
-                  hlsInstance.startLoad();
-                  break;
-                case Hls.ErrorTypes.MEDIA_ERROR:
-                  hlsInstance.recoverMediaError();
-                  break;
-                default:
-                  hlsInstance.destroy();
-                  statusText.textContent = "OFFLINE";
-                  nowPlayingText.textContent = "Stream error. Tap to retry.";
-                  setPlaybackState(false);
-                  break;
-              }
-            }
-          });
-        } else {
-          audio.src = url;
-        }
-      } else {
-        // Anti-cache string ensures real-time edge for Shoutcast/Icecast
-        audio.src = url + (url.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
       }
     }
 
     function playStation(station) {
       if (currentStation && currentStation.id !== station.id) {
-        updateCardState(currentStation.id, false);
+        updatePlayButton(currentStation.id, false);
       }
       
       currentStation = station;
-      highlightStation(station.id);
-      
-      statusText.textContent = "CONNECTING...";
-      nowPlayingText.textContent = station.name;
+      highlightPlayingStation(station.id);
+      nowPlayingText.textContent = `Connecting to ${station.name}...`;
 
-      attachStream(station.streamUrl);
-      audio.load();
+      // Clean up previous HLS instance if it exists
+      if (hls) {
+        hls.destroy();
+        hls = null;
+      }
 
-      const promise = audio.play();
-      if (promise !== undefined) {
-        promise.then(() => {
-          updateMediaSession(station);
-        }).catch(err => {
-          console.warn('Playback error:', err);
-          statusText.textContent = "OFFLINE";
-          nowPlayingText.textContent = "Unable to connect. Tap to retry.";
-          setPlaybackState(false);
+      const isM3u8 = station.streamUrl.includes('.m3u8');
+
+      // Use Hls.js if browser cannot play m3u8 natively (Chrome, Firefox, Edge, etc.)
+      if (isM3u8 && !audio.canPlayType('application/vnd.apple.mpegurl') && Hls.isSupported()) {
+        hls = new Hls({ enableWorker: true });
+        hls.loadSource(station.streamUrl);
+        hls.attachMedia(audio);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          audio.play().then(() => updateMediaSession(station)).catch(err => {
+            console.error('Playback error:', err);
+            nowPlayingText.textContent = 'Stream unavailable. Try another.';
+            setPlaybackState(false);
+          });
         });
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          if (data.fatal) {
+            console.error('HLS stream fatal error:', data);
+            nowPlayingText.textContent = 'Stream unavailable. Try another.';
+            setPlaybackState(false);
+          }
+        });
+      } else {
+        // Native playback for Safari / iOS and regular MP3 streams
+        audio.src = station.streamUrl;
+        audio.load();
+
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              updateMediaSession(station);
+            })
+            .catch(err => {
+              console.error('Playback failed:', err);
+              nowPlayingText.textContent = 'Stream unavailable. Try another.';
+              setPlaybackState(false);
+            });
+        }
       }
     }
 
@@ -707,7 +537,7 @@
       
       if (currentStation && currentStation.id === stationId) {
         if (audio.paused) {
-          playStation(station); // Re-syncs live stream
+          audio.play();
         } else {
           audio.pause();
         }
@@ -716,112 +546,64 @@
       }
     }
 
-    function changeStation(step) {
-      if (!currentStation) {
-        playStation(step > 0 ? stations[0] : stations[stations.length - 1]);
-        return;
-      }
-      const currentIndex = stations.findIndex(s => s.id === currentStation.id);
-      let nextIndex = (currentIndex + step + stations.length) % stations.length;
-      playStation(stations[nextIndex]);
+    function changeStation(direction) {
+      const currentIndex = currentStation ? stations.findIndex(s => s.id === currentStation.id) : 0;
+      let targetIndex = currentIndex + direction;
+      
+      if (targetIndex >= stations.length) targetIndex = 0;
+      if (targetIndex < 0) targetIndex = stations.length - 1;
+
+      playStation(stations[targetIndex]);
     }
 
-    function updateCardState(stationId, isPlaying) {
-      const card = document.getElementById(`station-${stationId}`);
-      if (!card) return;
-      const icon = card.querySelector('.play-btn i');
-      const btn = card.querySelector('.play-btn');
-      if (isPlaying) {
-        btn.classList.add('playing');
-        icon.className = 'fas fa-pause';
-      } else {
-        btn.classList.remove('playing');
-        icon.className = 'fas fa-play';
-      }
-    }
+    audio.addEventListener('playing', () => {
+      setPlaybackState(true);
+      nowPlayingText.textContent = currentStation.name;
+    });
 
-    function highlightStation(stationId) {
-      document.querySelectorAll('.station-card').forEach(c => c.classList.remove('playing'));
-      const activeCard = document.getElementById(`station-${stationId}`);
-      if (activeCard) activeCard.classList.add('playing');
-    }
-
-    // Audio Event Handlers
-    audio.addEventListener('playing', () => setPlaybackState(true));
-    audio.addEventListener('pause', () => setPlaybackState(false));
-    audio.addEventListener('waiting', () => { statusText.textContent = "BUFFERING"; });
-    audio.addEventListener('error', () => {
-      statusText.textContent = "OFFLINE";
-      nowPlayingText.textContent = "Stream temporarily unavailable";
+    audio.addEventListener('pause', () => {
       setPlaybackState(false);
+      nowPlayingText.textContent = `Paused (${currentStation ? currentStation.name : ''})`;
+    });
+
+    audio.addEventListener('waiting', () => {
+      nowPlayingText.textContent = 'Buffering...';
+    });
+
+    audio.addEventListener('error', () => {
+      nowPlayingText.textContent = 'Error connecting to radio.';
+      setPlaybackState(false);
+    });
+
+    stationsContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.play-btn');
+      if (btn) {
+        const id = btn.getAttribute('data-id');
+        togglePlay(id);
+      }
     });
 
     nextBtn.addEventListener('click', () => changeStation(1));
     prevBtn.addEventListener('click', () => changeStation(-1));
 
-    // Volume Handler (with iOS silent fallbacks)
-    volumeSlider.addEventListener('input', (e) => {
-      try {
-        audio.volume = e.target.value;
-      } catch (err) {}
-      
-      if (e.target.value == 0) volumeIcon.className = 'fas fa-volume-xmark';
-      else if (e.target.value < 0.5) volumeIcon.className = 'fas fa-volume-low';
-      else volumeIcon.className = 'fas fa-volume-high';
-    });
-
-    volumeIcon.addEventListener('click', () => {
-      try {
-        if (audio.volume > 0) {
-          audio.dataset.prevVol = audio.volume;
-          audio.volume = 0;
-          volumeSlider.value = 0;
-          volumeIcon.className = 'fas fa-volume-xmark';
-        } else {
-          const restoreVol = audio.dataset.prevVol || 1;
-          audio.volume = restoreVol;
-          volumeSlider.value = restoreVol;
-          volumeIcon.className = 'fas fa-volume-high';
-        }
-      } catch (err) {}
-    });
-
-    // Sleep Timer
-    sleepTimerBtn.addEventListener('click', () => {
-      currentTimerIndex = (currentTimerIndex + 1) % timerDurations.length;
-      const minutes = timerDurations[currentTimerIndex];
-
-      if (sleepTimeout) clearTimeout(sleepTimeout);
-
-      if (minutes > 0) {
-        timerLabel.textContent = `${minutes} min`;
-        sleepTimerBtn.classList.add('active');
-        sleepTimeout = setTimeout(() => {
-          audio.pause();
-          timerLabel.textContent = 'Timer: Off';
-          sleepTimerBtn.classList.remove('active');
-          currentTimerIndex = 0;
-        }, minutes * 60 * 1000);
+    function updatePlayButton(stationId, isPlaying) {
+      const button = document.querySelector(`.play-btn[data-id="${stationId}"]`);
+      if (!button) return;
+      const icon = button.querySelector('i');
+      if (isPlaying) {
+        button.classList.add('playing');
+        icon.className = 'fas fa-pause';
       } else {
-        timerLabel.textContent = 'Timer: Off';
-        sleepTimerBtn.classList.remove('active');
+        button.classList.remove('playing');
+        icon.className = 'fas fa-play';
       }
-    });
+    }
 
-    // Keyboard Navigation
-    window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') {
-        e.preventDefault();
-        if (currentStation) togglePlay(currentStation.id);
-        else playStation(stations[0]);
-      } else if (e.code === 'ArrowRight') {
-        changeStation(1);
-      } else if (e.code === 'ArrowLeft') {
-        changeStation(-1);
-      } else if (e.code === 'KeyM') {
-        volumeIcon.click();
-      }
-    });
+    function highlightPlayingStation(stationId) {
+      document.querySelectorAll('.station-card').forEach(card => card.classList.remove('playing'));
+      const activeCard = document.getElementById(`station-${stationId}`);
+      if (activeCard) activeCard.classList.add('playing');
+    }
   </script>
 </body>
 </html>
