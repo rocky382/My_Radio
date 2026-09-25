@@ -11,12 +11,12 @@
   <meta name="apple-mobile-web-app-title" content="My Radio">
   <meta name="theme-color" content="#1a1a2e">
 
-  <!-- Placeholders for Inbuilt Generated Icons -->
+  <!-- Icons -->
   <link rel="apple-touch-icon" id="apple-icon" sizes="180x180">
   <link rel="icon" id="favicon" type="image/png">
   <link rel="manifest" id="pwa-manifest">
 
-  <!-- INBUILT ICON GENERATOR SCRIPT (Executes instantly before rendering) -->
+  <!-- INBUILT ICON GENERATOR SCRIPT -->
   <script>
     (function generateInbuiltIcon() {
       const canvas = document.createElement('canvas');
@@ -24,14 +24,12 @@
       canvas.height = 180;
       const ctx = canvas.getContext('2d');
 
-      // 1. Dark solid background (Prevents iOS transparency bug)
       const bgGrad = ctx.createLinearGradient(0, 0, 180, 180);
       bgGrad.addColorStop(0, '#1f1d36');
       bgGrad.addColorStop(1, '#0e131f');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, 180, 180);
 
-      // 2. Vibrant gradient inner circle
       const circleGrad = ctx.createLinearGradient(20, 20, 160, 160);
       circleGrad.addColorStop(0, '#ff6b6b');
       circleGrad.addColorStop(1, '#ffa502');
@@ -40,7 +38,6 @@
       ctx.fillStyle = circleGrad;
       ctx.fill();
 
-      // 3. Antenna
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 4;
       ctx.lineCap = 'round';
@@ -49,13 +46,11 @@
       ctx.lineTo(48, 50);
       ctx.stroke();
 
-      // Antenna tip
       ctx.beginPath();
       ctx.arc(46, 48, 4.5, 0, Math.PI * 2);
       ctx.fillStyle = '#ffffff';
       ctx.fill();
 
-      // 4. Radio Body
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
       if (ctx.roundRect) {
@@ -65,7 +60,6 @@
       }
       ctx.fill();
 
-      // 5. Speaker Grill
       ctx.fillStyle = '#ff6b6b';
       ctx.beginPath();
       ctx.arc(74, 97, 13, 0, Math.PI * 2);
@@ -76,28 +70,23 @@
       ctx.arc(74, 97, 5, 0, Math.PI * 2);
       ctx.fill();
 
-      // 6. Tuner Display & Dials
       ctx.fillStyle = '#ffa502';
       ctx.fillRect(96, 86, 22, 5);
       ctx.fillRect(96, 94, 22, 5);
       ctx.fillRect(96, 102, 22, 5);
 
-      // 7. Radio Waves
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.arc(90, 95, 68, -Math.PI * 0.75, -Math.PI * 0.25);
       ctx.stroke();
 
-      // Export base64 Data URL
       const iconUrl = canvas.toDataURL('image/png');
       window.generatedAppIcon = iconUrl;
 
-      // Assign to iOS Home Screen Icon & Favicon
       document.getElementById('apple-icon').href = iconUrl;
       document.getElementById('favicon').href = iconUrl;
 
-      // Inline PWA Web Manifest
       const manifest = {
         name: "My Radio Stations",
         short_name: "Radio",
@@ -113,7 +102,6 @@
     })();
   </script>
 
-  <!-- Font Awesome & HLS Library for .m3u8 stream compatibility -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -322,8 +310,8 @@
   </style>
 </head>
 <body>
-  <!-- Embedded audio tag with iOS attributes -->
-  <audio id="radioPlayer" playsinline webkit-playsinline preload="none"></audio>
+  <!-- Optimized HTML5 Audio element for iOS Safari -->
+  <audio id="radioPlayer" playsinline webkit-playsinline></audio>
 
   <div class="header">
     <h1><i class="fas fa-music"></i> My Radio Stations</h1>
@@ -408,6 +396,7 @@
     const audio = document.getElementById('radioPlayer');
     let currentStation = null;
     let hls = null;
+    let stallTimeout = null;
 
     const stationsContainer = document.getElementById('stationsContainer');
     const nowPlayingText = document.getElementById('nowPlayingText');
@@ -423,7 +412,7 @@
       visualizer.appendChild(bar);
     }
 
-    // Populate Station Cards
+    // Populate Cards
     stations.forEach(station => {
       const stationCard = document.createElement('div');
       stationCard.className = 'station-card';
@@ -444,15 +433,15 @@
       stationsContainer.appendChild(stationCard);
     });
 
-    // Update Bluetooth & Lock Screen Information
+    // Update MediaSession with reliable HTTPS artwork for iOS lock screens
     function updateMediaSession(station) {
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: station.name,
           artist: station.description,
-          album: 'Live Radio',
+          album: 'Live FM Radio',
           artwork: [
-            { src: window.generatedAppIcon, sizes: '180x180', type: 'image/png' }
+            { src: 'https://cdn-icons-png.flaticon.com/512/3075/3075908.png', sizes: '512x512', type: 'image/png' }
           ]
         });
 
@@ -476,6 +465,8 @@
     }
 
     function playStation(station) {
+      if (stallTimeout) clearTimeout(stallTimeout);
+      
       if (currentStation && currentStation.id !== station.id) {
         updatePlayButton(currentStation.id, false);
       }
@@ -484,51 +475,47 @@
       highlightPlayingStation(station.id);
       nowPlayingText.textContent = `Connecting to ${station.name}...`;
 
-      // Clean up previous HLS instance if it exists
+      // Clean up previous HLS instance if active
       if (hls) {
         hls.destroy();
         hls = null;
       }
 
       const isM3u8 = station.streamUrl.includes('.m3u8');
+      const canPlayNativeHls = audio.canPlayType('application/vnd.apple.mpegurl');
 
-      // Use Hls.js if browser cannot play m3u8 natively (Chrome, Firefox, Edge, etc.)
-      if (isM3u8 && !audio.canPlayType('application/vnd.apple.mpegurl') && Hls.isSupported()) {
+      // Use Hls.js for desktop/Android browsers that don't support native HLS
+      if (isM3u8 && !canPlayNativeHls && Hls.isSupported()) {
         hls = new Hls({ enableWorker: true });
         hls.loadSource(station.streamUrl);
         hls.attachMedia(audio);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          audio.play().then(() => updateMediaSession(station)).catch(err => {
-            console.error('Playback error:', err);
-            nowPlayingText.textContent = 'Stream unavailable. Try another.';
-            setPlaybackState(false);
-          });
+          audio.play().then(() => updateMediaSession(station)).catch(handlePlaybackError);
         });
         hls.on(Hls.Events.ERROR, (event, data) => {
           if (data.fatal) {
-            console.error('HLS stream fatal error:', data);
             nowPlayingText.textContent = 'Stream unavailable. Try another.';
             setPlaybackState(false);
           }
         });
       } else {
-        // Native playback for Safari / iOS and regular MP3 streams
+        // Native iOS Safari path (No audio.load() to preserve user gesture)
         audio.src = station.streamUrl;
-        audio.load();
-
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise
-            .then(() => {
-              updateMediaSession(station);
-            })
-            .catch(err => {
-              console.error('Playback failed:', err);
-              nowPlayingText.textContent = 'Stream unavailable. Try another.';
-              setPlaybackState(false);
-            });
+            .then(() => updateMediaSession(station))
+            .catch(handlePlaybackError);
         }
       }
+    }
+
+    function handlePlaybackError(err) {
+      // Ignore AbortError caused when user rapidly taps another station
+      if (err.name === 'AbortError') return;
+      console.warn('Playback error:', err);
+      nowPlayingText.textContent = 'Stream temporarily unavailable.';
+      setPlaybackState(false);
     }
 
     function togglePlay(stationId) {
@@ -537,7 +524,7 @@
       
       if (currentStation && currentStation.id === stationId) {
         if (audio.paused) {
-          audio.play();
+          audio.play().catch(handlePlaybackError);
         } else {
           audio.pause();
         }
@@ -556,6 +543,7 @@
       playStation(stations[targetIndex]);
     }
 
+    // Audio State Event Listeners
     audio.addEventListener('playing', () => {
       setPlaybackState(true);
       nowPlayingText.textContent = currentStation.name;
@@ -570,7 +558,20 @@
       nowPlayingText.textContent = 'Buffering...';
     });
 
-    audio.addEventListener('error', () => {
+    // iOS HLS Stream Recovery: If stream stalls for > 4s, automatically reconnect
+    audio.addEventListener('stalled', () => {
+      if (stallTimeout) clearTimeout(stallTimeout);
+      stallTimeout = setTimeout(() => {
+        if (currentStation && !audio.paused) {
+          audio.src = currentStation.streamUrl;
+          audio.play().catch(() => {});
+        }
+      }, 4000);
+    });
+
+    audio.addEventListener('error', (e) => {
+      // Avoid throwing errors during standard pause/teardown
+      if (!audio.src || audio.src === window.location.href) return;
       nowPlayingText.textContent = 'Error connecting to radio.';
       setPlaybackState(false);
     });
